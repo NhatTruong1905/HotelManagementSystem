@@ -1,11 +1,15 @@
 package com.hotel.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "booking_room")
+@Getter
+@Setter
 public class BookingRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,36 +27,5 @@ public class BookingRoom {
     @Column(name = "price_at_booking", nullable = false, precision = 15, scale = 2)
     private BigDecimal priceAtBooking;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Booking getBooking() {
-        return booking;
-    }
-
-    public void setBooking(Booking booking) {
-        this.booking = booking;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    public BigDecimal getPriceAtBooking() {
-        return priceAtBooking;
-    }
-
-    public void setPriceAtBooking(BigDecimal priceAtBooking) {
-        this.priceAtBooking = priceAtBooking;
-    }
 
 }

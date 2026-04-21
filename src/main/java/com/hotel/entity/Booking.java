@@ -1,14 +1,20 @@
 package com.hotel.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "booking")
+@Getter
+@Setter
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,92 +58,6 @@ public class Booking {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public LocalDate getExpectedCheckIn() {
-        return expectedCheckIn;
-    }
-
-    public void setExpectedCheckIn(LocalDate expectedCheckIn) {
-        this.expectedCheckIn = expectedCheckIn;
-    }
-
-    public LocalDate getExpectedCheckOut() {
-        return expectedCheckOut;
-    }
-
-    public void setExpectedCheckOut(LocalDate expectedCheckOut) {
-        this.expectedCheckOut = expectedCheckOut;
-    }
-
-    public Instant getActualCheckIn() {
-        return actualCheckIn;
-    }
-
-    public void setActualCheckIn(Instant actualCheckIn) {
-        this.actualCheckIn = actualCheckIn;
-    }
-
-    public Instant getActualCheckOut() {
-        return actualCheckOut;
-    }
-
-    public void setActualCheckOut(Instant actualCheckOut) {
-        this.actualCheckOut = actualCheckOut;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String getSpecialRequest() {
-        return specialRequest;
-    }
-
-    public void setSpecialRequest(String specialRequest) {
-        this.specialRequest = specialRequest;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
+    private Set<BookingRoom> bookingRooms;
 }
