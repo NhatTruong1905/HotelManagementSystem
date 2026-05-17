@@ -1,0 +1,21 @@
+<div th:fragment="genericModal(modalId, modalTitle, bodyFragment, footerFragment, actionUrl)"
+     th:id="${modalId}" class="modal fade" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-0 border-dark shadow">
+            <div class="modal-header bg-dark text-white rounded-0 py-3">
+                <h5 class="modal-title fs-5" th:text="${modalTitle}"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" th:action="@{${actionUrl}}">
+                <div class="modal-body p-4">
+                    <div th:replace="${bodyFragment}"></div>
+                </div>
+                <div class="modal-footer bg-light py-2 border-top-0">
+                    <div th:replace="${footerFragment}"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

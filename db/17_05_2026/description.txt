@@ -1,0 +1,1 @@
+Thêm dữ liệu RoomInventory và User có role: ROLE_ADMIN
