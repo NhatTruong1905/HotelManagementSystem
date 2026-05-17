@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head}">
+    <title>Quản lý dịch vụ</title>
+</head>
+<body th:replace="~{layout/base :: main('service', ~{:: #service-content})}">
+<div id="service-content">
+    <div class="table-responsive border shadow-sm">
+        <table class="table table-striped table-hover mb-0 align-middle text-center">
+            <thead class="table-dark">
+            <tr>
+                <th style="width: 40px; vertical-align: middle;"><input type="checkbox" onclick="selectAllCheckbox(this.id, 'action-select-service')" id="selectAllService"></th>
+                <th class="text-start">Tên dịch vụ</th>
+                <th>Giá tiêu chuẩn</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="service : ${listService}">
+                <td style="vertical-align: middle;"><input type="checkbox" class="action-select-service" onclick="resetSelectAllCheckBox('selectAllService', 'action-select-service')"></td>
+                <td class="text-start fw-bold" th:text="${service.name}"></td>
+                <td th:text="${#numbers.formatDecimal(service.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                <td>
+                    <span th:if="${service.active}">Còn sử dụng</span>
+                    <span th:unless="${service.active}">Không sử dụng</span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-dark rounded-0 me-1 fw-bold"
+                            data-bs-toggle="modal"
+                            th:data-bs-target="'#editServiceModal-' + ${service.id}">
+                        Sửa
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-0 fw-bold">Xoá</button>
+
+                    <div th:replace="~{modals/base :: genericModal(
+                            'editServiceModal-' + ${service.id},
+                            'Sửa dịch vụ: ',
+                            ~{modals/service_fields :: serviceBody(${service})},
+                            ~{modals/service_fields :: serviceFooter},
+                            '/admin/services/update'
+                        )}"></div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(listService)}">
+                <td colspan="4" class="text-muted py-4">Chưa có dịch vụ nào trong hệ thống.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="~{modals/base :: genericModal(
+        'addServiceModal',
+        'Thêm mới dịch vụ',
+        ~{modals/service_fields :: serviceBody(null)},
+        ~{modals/service_fields :: serviceFooter},
+        '/admin/service/save'
+    )}"></div>
+</div>
+</body>
+</html>
