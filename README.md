@@ -1,4 +1,4 @@
-# Hotel System Spring Project
+# Hotel Management System Project
 
 Dự án quản lý khách sạn sử dụng Spring Framework, Hibernate và ReactJS.
 
