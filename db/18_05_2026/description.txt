@@ -1,1 +1,1 @@
-Thêm data vào Service
+Thêm data vào Service, Customer, Room, Booking, Booking_Room, Booking_Service, Payment 
