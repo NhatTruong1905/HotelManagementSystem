@@ -1,0 +1,63 @@
+<div th:fragment="customerBody(customer)">
+    <input type="hidden" name="id" th:value="${customer?.id}">
+
+    <div class="row mb-3 align-items-center">
+        <label class="col-sm-3 col-form-label text-end fw-bold small">Tên khách hàng:</label>
+        <div class="col-sm-9">
+            <input type="text" name="name" th:value="${customer?.name}"
+                   class="form-control form-control-sm rounded-0 shadow-none" placeholder="VD: Nguyễn Đinh Nhật Trường"
+                   required>
+        </div>
+    </div>
+
+    <div class="row mb-3 align-items-center">
+        <label class="col-sm-3 col-form-label text-end fw-bold small">Email:</label>
+        <div class="col-sm-9">
+            <input type="email" name="email" th:value="${customer?.email}"
+                   class="form-control form-control-sm rounded-0 shadow-none" placeholder="VD: nhattruong@gmail.com"
+                   required>
+        </div>
+    </div>
+
+    <div class="row mb-3 align-items-center">
+        <label class="col-sm-3 col-form-label text-end fw-bold small">Số điện thoại:</label>
+        <div class="col-sm-9">
+            <input type="text" name="phone" th:value="${customer?.phone}"
+                   class="form-control form-control-sm rounded-0 shadow-none" placeholder="VD: 0901234567" required>
+        </div>
+    </div>
+
+    <div class="row mb-3 align-items-center">
+        <label class="col-sm-3 col-form-label text-end fw-bold small">Địa chỉ:</label>
+        <div class="col-sm-9">
+            <input type="text" name="address" th:value="${customer?.address}"
+                   class="form-control form-control-sm rounded-0 shadow-none" placeholder="VD: TP. Hồ Chí Minh"
+                   required>
+        </div>
+    </div>
+
+    <div class="row mb-3 align-items-center">
+        <label class="col-sm-3 col-form-label text-end fw-bold small">Trạng thái:</label>
+        <div class="col-sm-9 d-flex align-items-center">
+            <div class="form-check form-check-inline mb-0">
+                <input class="form-check-input shadow-none" type="radio" name="active"
+                       th:id="'activeTrue-' + ${customer != null ? customer.id : 'add'}" value="true"
+                       th:checked="${customer == null || customer.active}" required>
+                <label class="form-check-label user-select-none"
+                       th:for="'activeTrue-' + ${customer != null ? customer.id : 'add'}">Còn sử dụng</label>
+            </div>
+            <div class="form-check form-check-inline mb-0">
+                <input class="form-check-input shadow-none" type="radio" name="active"
+                       th:id="'activeFalse-' + ${customer != null ? customer.id : 'add'}" value="false"
+                       th:checked="${customer != null && !customer.active}">
+                <label class="form-check-label user-select-none"
+                       th:for="'activeFalse-' + ${customer != null ? customer.id : 'add'}">Không sử dụng</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="customerFooter">
+    <button type="button" class="btn btn-outline-secondary btn-sm px-4 rounded-0" data-bs-dismiss="modal">Hủy</button>
+    <button type="submit" class="btn btn-dark btn-sm px-4 rounded-0 fw-bold">Lưu thay đổi</button>
+</div>
