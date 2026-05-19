@@ -1,5 +1,6 @@
 package com.hotel.controllers.admin;
 
+import com.hotel.dto.CustomerDTO;
 import com.hotel.entity.Customer;
 import com.hotel.entity.Service;
 import com.hotel.services.CustomerService;
@@ -25,7 +26,7 @@ public class CustomerController {
 
     @GetMapping("/customers")
     public String customerView(Model model, @RequestParam Map<String, String> params) {
-        model.addAttribute("customer", new Customer());
+        model.addAttribute("customer", new CustomerDTO());
         model.addAttribute("listCustomer", this.customerService.listCustomer(params));
 
         model.addAttribute("kw", params.get("kw"));
@@ -42,8 +43,8 @@ public class CustomerController {
     }
 
     @PostMapping("/customers")
-    public String processService(@ModelAttribute(name = "service") Customer customer) {
-        this.customerService.addOrUpdateCustomer(customer);
+    public String processService(@ModelAttribute(name = "service") CustomerDTO customerDTO) {
+        this.customerService.addOrUpdateCustomer(customerDTO);
         return "redirect:/admin/customers";
     }
 }
