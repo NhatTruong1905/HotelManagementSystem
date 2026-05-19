@@ -6,8 +6,8 @@ import com.hotel.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -16,22 +16,28 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public List<Customer> getAllCustomers() {
-        List<Object[]> listCustomers = customerRepository.getAllCustomers();
+    public List<Customer> listCustomer(Map<String, String> params) {
+        List<Customer> listCustomer = customerRepository.listCustomer(params);
+        return listCustomer;
+    }
 
-        List<Customer> customers = new ArrayList<>();
-        for (Object[] obj : listCustomers) {
-            Customer customer = new Customer();
-            customer.setId((int) obj[0]);
-            customer.setName((String) obj[1]);
-            customer.setEmail((String) obj[2]);
-            customer.setPhone((String) obj[3]);
-            customer.setAddress((String) obj[4]);
-            customer.setActive((boolean) obj[5]);
+    @Override
+    public long countCustomer(Map<String, String> params) {
+        return customerRepository.countCustomer(params);
+    }
 
-            customers.add(customer);
-        }
+    @Override
+    public void addOrUpdateCustomer(Customer customer) {
+        this.customerRepository.addOrUpdateCustomer(customer);
+    }
 
-        return customers;
+    @Override
+    public void deleteCustomer(int id) {
+        this.customerRepository.deleteCustomer(id);
+    }
+
+    @Override
+    public void deleteCustomer(List<Integer> ids) {
+        this.customerRepository.deleteCustomer(ids);
     }
 }
