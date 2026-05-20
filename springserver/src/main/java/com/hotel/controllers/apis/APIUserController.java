@@ -18,13 +18,13 @@ public class APIUserController {
 
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteService(@PathVariable(value = "id") int id) {
+    public void deleteUser(@PathVariable(value = "id") int id) {
         this.userService.delete(id);
     }
 
     @DeleteMapping("/users")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMultiCustomer(@RequestBody List<Map<String, String>> listCustomerDelete) {
+    public void deleteMultiUser(@RequestBody List<Map<String, String>> listCustomerDelete) {
         List<Integer> ids = new ArrayList<>();
         listCustomerDelete.forEach(item -> {
             ids.add(Integer.valueOf(item.get("id")));
