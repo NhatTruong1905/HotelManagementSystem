@@ -1,7 +1,8 @@
 <div th:fragment="userForm(type)">
-    <form method="POST" th:action="@{/admin/users}" th:object="${user}">
+    <form method="POST" th:action="@{/admin/users}" th:object="${user}" enctype="multipart/form-data">
         <div class="modal-body p-4">
             <input type="hidden" name="id" th:id="${type + 'UserId'}">
+            <input type="hidden" name="avatar" th:id="${type + 'UserAvatar'}">
 
             <div class="row mb-3 align-items-center">
                 <label class="col-sm-3 col-form-label text-end fw-bold small">Tên đăng nhập:</label>
@@ -16,7 +17,7 @@
             <div class="row mb-3 align-items-center">
                 <label class="col-sm-3 col-form-label text-end fw-bold small">Mật khẩu đăng nhập:</label>
                 <div class="col-sm-9">
-                    <input type="text" name="password"
+                    <input type="password" name="password"
                            th:id="${type + 'UserPassword'}"
                            class="form-control form-control-sm rounded-0 shadow-none"
                            placeholder="Nhập mật khẩu đăng nhập"
@@ -67,11 +68,32 @@
                 <div class="col-sm-9">
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input shadow-none" type="checkbox" name="active" value="true"
-                               th:id="${type + 'ActiveCheckbox'}">
+                               th:id="${type + 'UserActive'}">
+
                         <label class="form-check-label user-select-none fw-semibold small text-secondary"
-                               th:for="${type + 'ActiveCheckbox'}">
-                            Tích chọn để kích hoạt khách hàng (Còn hoạt động)
+                               th:for="${type + 'UserActive'}">
+                            Tích chọn để kích hoạt (Còn hoạt động)
                         </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4 align-items-center">
+                <label class="col-sm-3 col-form-label text-end fw-bold small">Ảnh đại diện:</label>
+                <div class="col-sm-9 d-flex align-items-center gap-3">
+                    <img th:id="${type + 'UserAvatarPreview'}"
+                         src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                         alt="Avatar Preview"
+                         class="rounded-circle border shadow-sm"
+                         style="width: 50px; height: 50px; object-fit: cover;">
+
+                    <div class="flex-grow-1">
+                        <input type="file" name="avatarFile"
+                               th:id="${type + 'UserAvatarFile'}"
+                               class="form-control form-control-sm rounded-0 shadow-none"
+                               accept="image/*"
+                               onchange="previewNewAvatar(this, this.id)">
+                        <small class="text-muted" style="font-size: 0.7rem;">Chấp nhận file: .jpg, .png</small>
                     </div>
                 </div>
             </div>

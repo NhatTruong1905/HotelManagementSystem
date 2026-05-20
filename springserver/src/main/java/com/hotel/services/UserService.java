@@ -3,6 +3,7 @@ package com.hotel.services;
 import com.hotel.dto.UserDTO;
 import com.hotel.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ public interface UserService extends UserDetailsService {
 
     long countUser(Map<String, String> params);
 
-    void addOrUpdateUser(UserDTO UserDTO);
+    void addOrUpdateUser(UserDTO UserDTO, MultipartFile avatar);
 
     void deleteUser(int id);
 
