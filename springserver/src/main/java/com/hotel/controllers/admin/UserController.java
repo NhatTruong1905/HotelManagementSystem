@@ -8,9 +8,11 @@ import com.hotel.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -50,9 +52,10 @@ public class UserController {
         return "user";
     }
 
-    @PostMapping("/users")
+    @PostMapping(path = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public String processUser(@ModelAttribute(name = "user") UserDTO userDTO) {
         userService.addOrUpdateUser(userDTO);
-        return "user";
+        return "redirect:/admin/users";
     }
 }

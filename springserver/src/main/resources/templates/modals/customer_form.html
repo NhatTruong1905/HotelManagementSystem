@@ -52,8 +52,7 @@
                     <input type="text" name="userId"
                            th:id="${type + 'CustomerUser'}"
                            class="form-control form-control-sm rounded-0 shadow-none"
-                           placeholder="Nhập ID của User (Nếu có)"
-                           required>
+                           placeholder="Nhập ID của User (Nếu có)">
                 </div>
             </div>
 
@@ -62,10 +61,11 @@
                 <div class="col-sm-9">
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input shadow-none" type="checkbox" name="active" value="true"
-                               th:id="${type + 'ActiveCheckbox'}">
+                               th:id="${type + 'CustomerActive'}">
+
                         <label class="form-check-label user-select-none fw-semibold small text-secondary"
-                               th:for="${type + 'ActiveCheckbox'}">
-                            Tích chọn để kích hoạt khách hàng (Còn hoạt động)
+                               th:for="${type + 'CustomerActive'}">
+                            Tích chọn để kích hoạt (Còn hoạt động)
                         </label>
                     </div>
                 </div>

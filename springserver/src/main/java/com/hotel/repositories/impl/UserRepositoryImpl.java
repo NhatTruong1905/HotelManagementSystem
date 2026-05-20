@@ -99,12 +99,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void addOrUpdateUser(User User) {
+    public void addOrUpdateUser(User user) {
         Session session = this.factory.getObject().getCurrentSession();
-        if (User.getId() == null) {
-            session.persist(User);
+        if (user.getId() == null) {
+            session.persist(user);
         } else {
-            session.merge(User);
+            session.merge(user);
         }
     }
 
