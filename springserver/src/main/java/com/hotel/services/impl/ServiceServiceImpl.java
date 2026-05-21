@@ -50,6 +50,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public void delete(List<Integer> ids) {
+
         if (this.bookingServiceService.existsByService(ids)) {
             throw new ServiceInUseException("This service has already been used in booking data!");
         }
