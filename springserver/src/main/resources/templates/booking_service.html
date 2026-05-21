@@ -20,7 +20,7 @@
                                     Thêm
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger rounded-0 fw-bold"
-                                        th:onclick="|deleteMulti('@{/api/booking-services}', 'bookingService')|">
+                                        th:onclick="|deleteMulti('@{/api/booking-services}', 'booking-service')|">
                                     Xoá
                                 </button>
                             </div>
@@ -51,6 +51,12 @@
                 <tr th:each="b : ${listBookingService}">
                     <td style="vertical-align: middle;">
                         <input type="checkbox" class="action-select-booking-service"
+                               th:data-id="${b.id}"
+                               th:data-bookingid="${b.bookingId}"
+                               th:data-serviceid="${b.serviceId}"
+                               th:data-quantity="${b.quantity}"
+                               th:data-priceatusage="${b.priceAtUsage}"
+                               th:data-note="${b.note}"
                                onclick="resetSelectAllCheckBox('selectAllBookingService', 'action-select-booking-service')">
                     </td>
                     <td hidden th:text="${b.id}"></td>

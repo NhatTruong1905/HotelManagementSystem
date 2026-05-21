@@ -75,7 +75,7 @@ deleteDetail = async (url) => {
 
 deleteMulti = async (url, prefix) => {
     const listCheckBox = document.getElementsByClassName(`action-select-${prefix}`);
-    const listElementNeedDelete = [];
+    const listElementDelete = [];
     Array.from(listCheckBox).forEach(checkBox => {
         if (checkBox.checked === false)
             return;
@@ -85,10 +85,11 @@ deleteMulti = async (url, prefix) => {
                 return;
             service[attr.name.replace('data-', '')] = attr.value;
         })
-        listElementNeedDelete.push(service);
+        listElementDelete.push(service);
     })
+    console.log(listElementDelete);
 
-    if (listElementNeedDelete.length === 0) {
+    if (listElementDelete.length === 0) {
         alert("Không có cái nào để xoá!");
         return;
     }
@@ -103,7 +104,7 @@ deleteMulti = async (url, prefix) => {
                 'Content-Type': 'application/json'
             },
 
-            body: JSON.stringify(listElementNeedDelete)
+            body: JSON.stringify(listElementDelete)
         })
         if (res.status === 204) {
             location.reload();
