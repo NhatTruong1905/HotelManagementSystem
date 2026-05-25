@@ -9,14 +9,18 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 public class JwtUtils {
-    private static final Dotenv dotenv = Dotenv.load();
-    private static final String SECRET = dotenv.get("JWT_SECRET");
-    private static final long EXPIRATION_MS = 86400000; // 1 ngày
+    private static final long EXPIRATION_MS = 86400000;
+    @Value("${jwt.secret}")
+    private static String SECRET;
 
     public static String generateToken(UserDTO userDTO) throws Exception {
         JWSSigner signer = new MACSigner(SECRET);
