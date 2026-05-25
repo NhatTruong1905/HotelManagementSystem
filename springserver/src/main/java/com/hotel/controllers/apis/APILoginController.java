@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,7 +27,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@PropertySource("classpath:login.properties")
+@PropertySource("classpath:secret/login.properties")
 @CrossOrigin
 public class APILoginController {
     @Autowired

@@ -144,6 +144,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO save(UserDTO entity) {
+        return null;
+    }
+
     public boolean authenticate(String username, String password) {
         return this.userRepository.authenticate(username, password);
     }
