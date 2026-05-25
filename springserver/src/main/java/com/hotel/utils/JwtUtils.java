@@ -10,13 +10,16 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@PropertySource("classpath:secret/jwt.properties")
 @Component
 public class JwtUtils {
     private static String secret;
+
     @Value("${JWT_SECRET}")
     public void setSecret(String secret) {
         JwtUtils.secret = secret;

@@ -4,22 +4,25 @@ import cookies from 'react-cookies';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./screens/Home/Home";
-import { MyUserContext } from "./configs/Contexts"; 
-import myUserReducer from "./reducers/MyUserReducer"; 
+import { MyUserContext } from "./configs/Contexts";
+import myUserReducer from "./reducers/MyUserReducer";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const App = () => {
   const [user, dispatch] = useReducer(myUserReducer, cookies.load("user") || null);
 
   return (
-    <MyUserContext.Provider value={[user, dispatch]}>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </MyUserContext.Provider>
+    <GoogleOAuthProvider clientId="42767697622-20a1cpvaavhp9vrvepq7sdgoi815luo9.apps.googleusercontent.com">
+      <MyUserContext.Provider value={[user, dispatch]}>
+        <BrowserRouter>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+          <Footer />
+        </BrowserRouter>
+      </MyUserContext.Provider>
+    </GoogleOAuthProvider>
   );
 }
 
