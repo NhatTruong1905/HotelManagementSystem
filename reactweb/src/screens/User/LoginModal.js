@@ -7,6 +7,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import cookies from 'react-cookies';
 import { MyUserContext } from "../../configs/Contexts";
 import { AuthSwitchFooter, ModalCloseButton, SharedModalStyle } from './UserStyle';
+import { GoogleLogin } from '@react-oauth/google';
+import FacebookLogin from '@greatsumini/react-facebook-login';
 
 const LoginModal = ({ show, handleClose, showRegister }) => {
     const [isEmailMode, setIsEmailMode] = useState(false);
@@ -43,7 +45,6 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
             });
 
             onHide();
-            // Xu ly tiep tuc trang thai neu chua dang nhap
             let next = q.get('next');
             if (next) nav(next);
             else nav('/');
@@ -53,6 +54,60 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
             setErr("Tên đăng nhập hoặc mật khẩu không chính xác!");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            setLoading(true);
+            setErr("");
+            let res = await Apis.post(endpoints['google'], null, {
+                params: { idToken: credentialResponse.credential }
+            });
+
+            const jwtToken = res.data.token;
+            const userData = res.data.user;
+
+            cookies.save('token', jwtToken, { path: '/' });
+            cookies.save('user', userData, { path: '/' });
+
+            dispatch({ "type": "LOGIN", "payload": userData });
+            onHide();
+            let next = q.get('next');
+            if (next) nav(next); else nav('/');
+        } catch (ex) {
+            console.error("Google Login Error:", ex);
+            setErr("Xác thực Google thất bại. Vui lòng thử lại!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFacebookSuccess = async (response) => {
+        if (response && response.accessToken) {
+            try {
+                setLoading(true);
+                setErr("");
+                let res = await Apis.post(endpoints['facebook'], null, {
+                    params: { accessToken: response.accessToken }
+                });
+
+                const jwtToken = res.data.token;
+                const userData = res.data.user;
+
+                cookies.save('token', jwtToken, { path: '/' });
+                cookies.save('user', userData, { path: '/' });
+
+                dispatch({ "type": "LOGIN", "payload": userData });
+                onHide();
+                let next = q.get('next');
+                if (next) nav(next); else nav('/');
+            } catch (ex) {
+                console.error("Facebook Login Error:", ex);
+                setErr("Xác thực Facebook thất bại. Vui lòng thử lại!");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -68,7 +123,7 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
             <SharedModalStyle />
 
             <Modal show={show} onHide={onHide} centered contentClassName="traveloka-modal shadow-lg">
-                <ModalCloseButton onClick={onHide}/>
+                <ModalCloseButton onClick={onHide} />
 
                 <div style={{ backgroundColor: '#fff' }}>
                     {!isEmailMode ? (
@@ -81,24 +136,78 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
                                     <i className="bi bi-gift"></i>
                                 </div>
                             </div>
-                            <div className="p-4 px-5 text-center mt-2">
-                                <div className="d-flex gap-3 mb-4">
-                                    <Button variant="light" className="flex-grow-1 rounded-pill border py-2 fw-bold text-dark bg-white shadow-sm">
-                                        <i className="bi bi-google me-2" style={{ color: '#DB4437' }}></i> Google
-                                    </Button>
-                                    <Button variant="light" className="flex-grow-1 rounded-pill border py-2 fw-bold text-dark bg-white shadow-sm">
-                                        <i className="bi bi-facebook me-2" style={{ color: '#4267B2' }}></i> Facebook
-                                    </Button>
+                            <div className="p-4 px-md-5 px-3 text-center mt-2">
+                                {err && <Alert variant="danger" className="small py-2">{err}</Alert>}
+                                {loading && <MySpinner />}
+
+                                <div className="d-flex justify-content-center gap-3 mb-4" style={{ display: loading ? 'none' : 'flex' }}>
+                                    
+                                    <div>
+                                        <GoogleLogin
+                                            onSuccess={handleGoogleSuccess}
+                                            onError={() => setErr("Không thể kết nối với Google.")}
+                                            shape="pill" 
+                                            width="180" 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <FacebookLogin
+                                            appId="1325779246184552"
+                                            onSuccess={handleFacebookSuccess}
+                                            onFail={(error) => {
+                                                console.error('Lỗi đăng nhập Facebook:', error);
+                                                setErr("Đăng nhập Facebook bị hủy hoặc thất bại.");
+                                            }}
+                                            render={({ onClick }) => (
+                                                <button
+                                                    type="button"
+                                                    onClick={onClick}
+                                                    style={{
+                                                        width: '180px',
+                                                        height: '40px', 
+                                                        backgroundColor: '#fff',
+                                                        border: '1px solid #dadce0',
+                                                        borderRadius: '20px', 
+                                                        boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px',
+                                                        cursor: 'pointer',
+                                                        transition: 'background-color 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                                                >
+                                                    <img 
+                                                        src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" 
+                                                        alt="Facebook Logo" 
+                                                        style={{ width: '20px', height: '20px' }} 
+                                                    />
+                                                    <span style={{
+                                                        color: '#3c4043',
+                                                        fontSize: '14px',
+                                                        fontWeight: '500',
+                                                        fontFamily: '"Google Sans", Roboto, Arial, sans-serif'
+                                                    }}>
+                                                        Facebook
+                                                    </span>
+                                                </button>
+                                            )}
+                                        />
+                                    </div>
                                 </div>
-                                <a href="#!" className="fw-bold text-primary text-decoration-none" onClick={(e) => { e.preventDefault(); setIsEmailMode(true); }}>
-                                    Tùy chọn khác
+
+                                <a href="#!" className="fw-bold text-primary text-decoration-none" onClick={(e) => { e.preventDefault(); setErr(""); setIsEmailMode(true); }}>
+                                    Tùy chọn đăng nhập khác
                                 </a>
                             </div>
                         </div>
                     ) : (
                         <div className="p-4 p-md-5 bg-white">
                             <div className="mb-4 text-center position-relative">
-                                <a href="#!" className="text-muted position-absolute start-0 top-0 mt-1" onClick={(e) => { e.preventDefault(); setIsEmailMode(false); }}>
+                                <a href="#!" className="text-muted position-absolute start-0 top-0 mt-1" onClick={(e) => { e.preventDefault(); setErr(""); setIsEmailMode(false); }}>
                                     <i className="bi bi-arrow-left fs-5"></i>
                                 </a>
                                 <h3 className="fw-bold text-primary">Hotel Booking</h3>
@@ -129,10 +238,10 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
                                 }
                             </Form>
 
-                            <AuthSwitchFooter 
-                                text="Chưa có tài khoản?" 
-                                linkText="Đăng ký ngay" 
-                                onClick={() => { onHide(); if (showRegister) showRegister(); }} 
+                            <AuthSwitchFooter
+                                text="Chưa có tài khoản?"
+                                linkText="Đăng ký ngay"
+                                onClick={() => { onHide(); if (showRegister) showRegister(); }}
                             />
                         </div>
                     )}
