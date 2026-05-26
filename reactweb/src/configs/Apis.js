@@ -9,12 +9,14 @@ export const endpoints = {
     'facebook':'/auth/facebook',
     'roomTypes': '/room-types',
     'availableRooms': '/rooms/available',
+    'google': '/auth/google',
+    'facebook': '/auth/facebook'
 }
 
 export const authApis = () => {
     console.info(cookies.load('token'))
     return axios.create({
-        baseURL: "http://localhost:8080/springserver/api/",
+        baseURL: `${process.env.REACT_APP_API_BASE_URL}/api/`,
         headers: {
             'Authorization': `Bearer ${cookies.load('token')}`
         }
@@ -23,5 +25,5 @@ export const authApis = () => {
 
 
 export default axios.create({
-    baseURL: "http://localhost:8080/springserver/api/"
+    baseURL:  `${process.env.REACT_APP_API_BASE_URL}/api/`
 })

@@ -8,12 +8,14 @@ import { MyUserContext } from "./configs/Contexts";
 import myUserReducer from "./reducers/MyUserReducer"; 
 import RoomType from "./screens/Booking/RoomType";
 import Room from "./screens/Booking/Room";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 
 const App = () => {
   const [user, dispatch] = useReducer(myUserReducer, cookies.load("user") || null);
 
   return (
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
     <MyUserContext.Provider value={[user, dispatch]}>
       <BrowserRouter>
         <Header />
@@ -28,6 +30,7 @@ const App = () => {
         <Footer />
       </BrowserRouter>
     </MyUserContext.Provider>
+    </GoogleOAuthProvider>
   );
 }
 
