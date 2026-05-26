@@ -5,8 +5,6 @@ export const endpoints = {
     'login': '/auth/login',
     'register': '/auth/register',
     'profile': '/secure/profile',
-    'google':'/auth/google', 
-    'facebook':'/auth/facebook',
     'roomTypes': '/room-types',
     'availableRooms': '/rooms/available',
     'google': '/auth/google',
