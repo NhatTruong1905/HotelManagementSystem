@@ -49,6 +49,8 @@ public class ApiSecurityConfigs {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
+
+
         return source;
     }
 }
