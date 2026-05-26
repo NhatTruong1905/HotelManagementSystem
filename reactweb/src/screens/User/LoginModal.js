@@ -6,7 +6,9 @@ import Apis, { authApis, endpoints } from "../../configs/Apis";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import cookies from 'react-cookies';
 import { MyUserContext } from "../../configs/Contexts";
-import { AuthSwitchFooter, ModalCloseButton, SharedModalStyle } from './UserStyle';
+import { AuthSwitchFooter, ModalCloseButton, SharedModalStyle, SocialButton } from './UserStyle';
+import { GoogleLogin } from '@react-oauth/google';
+import FacebookLogin from '@greatsumini/react-facebook-login';
 
 const LoginModal = ({ show, handleClose, showRegister }) => {
     const [isEmailMode, setIsEmailMode] = useState(false);
@@ -18,122 +20,124 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
     const [q] = useSearchParams();
     const nav = useNavigate();
 
-    const userInfo = [
-        { field: "username", label: "Tên đăng nhập", type: "text" },
-        { field: "password", label: "Mật khẩu", type: "password" }
-    ];
-
-    const login = async (e) => {
-        e.preventDefault();
-        setErr("");
-
+    const handleGoogleSuccess = async (credentialResponse) => {
         try {
-            setLoading(true);
-
-            let res = await Apis.post(endpoints['login'], { ...user });
-            const token = res.data.token;
-            cookies.save('token', token, { path: '/' });
-
-            let p = await authApis().get(endpoints['profile']);
-            cookies.save('user', p.data, { path: '/' });
-
-            dispatch({
-                "type": "LOGIN",
-                "payload": p.data
-            });
-
+            setLoading(true); setErr("");
+            let res = await Apis.post(endpoints['google'], { idToken: credentialResponse.credential });
+            cookies.save('token', res.data.token, { path: '/' });
+            cookies.save('user', res.data.user, { path: '/' });
+            dispatch({ "type": "LOGIN", "payload": res.data.user });
             onHide();
-            // Xu ly tiep tuc trang thai neu chua dang nhap
             let next = q.get('next');
-            if (next) nav(next);
-            else nav('/');
+            if (next) nav(next); else nav('/');
+        } catch (ex) { setErr("Xác thực Google thất bại!"); } finally { setLoading(false); }
+    };
 
-        } catch (ex) {
-            console.error(ex);
-            setErr("Tên đăng nhập hoặc mật khẩu không chính xác!");
-        } finally {
-            setLoading(false);
+    const handleFacebookSuccess = async (response) => {
+        if (response && response.accessToken) {
+            try {
+                setLoading(true); setErr("");
+                let res = await Apis.post(endpoints['facebook'], { accessToken: response.accessToken });
+                cookies.save('token', res.data.token, { path: '/' });
+                cookies.save('user', res.data.user, { path: '/' });
+                dispatch({ "type": "LOGIN", "payload": res.data.user });
+                onHide();
+                let next = q.get('next');
+                if (next) nav(next); else nav('/');
+            } catch (ex) { setErr("Xác thực Facebook thất bại!"); } finally { setLoading(false); }
         }
     };
 
-    const onHide = () => {
-        setIsEmailMode(false);
-        setUser({});
-        setErr("");
-        handleClose();
+    const login = async (e) => {
+        e.preventDefault(); setErr("");
+        try {
+            setLoading(true);
+            let res = await Apis.post(endpoints['login'], { ...user });
+            cookies.save('token', res.data.token, { path: '/' });
+            let p = await authApis().get(endpoints['profile']);
+            cookies.save('user', p.data, { path: '/' });
+            dispatch({ "type": "LOGIN", "payload": p.data });
+            onHide();
+            let next = q.get('next');
+            if (next) nav(next); else nav('/');
+        } catch (ex) { setErr("Tên đăng nhập hoặc mật khẩu không chính xác!"); } finally { setLoading(false); }
     };
+
+    const onHide = () => { setIsEmailMode(false); setUser({}); setErr(""); handleClose(); };
 
     return (
         <>
             <SharedModalStyle />
-
             <Modal show={show} onHide={onHide} centered contentClassName="traveloka-modal shadow-lg">
-                <ModalCloseButton onClick={onHide}/>
-
+                <ModalCloseButton onClick={onHide} />
                 <div style={{ backgroundColor: '#fff' }}>
+
+                    <div className="p-4 d-flex justify-content-between align-items-center" style={{ background: '#f8fbff' }}>
+                        <div>
+                            <h4 className="fw-bold text-primary m-0" style={{ fontSize: '1.25rem' }}>Hotel Booking</h4>
+                            <p className="text-muted small m-0 mt-1">Chúng tôi có một thỏa thuận mà bạn không thể cưỡng lại</p>
+                        </div>
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/3063/3063823.png"
+                            alt="Welcome"
+                            style={{ width: '65px', height: '65px', objectFit: 'contain' }}
+                        />
+                    </div>
+                    <hr className="my-0" style={{ color: '#eee' }} />
+
                     {!isEmailMode ? (
-                        <div className="d-flex flex-column">
-                            <div className="p-4" style={{ background: 'linear-gradient(135deg, #e0f7fa 0%, #e8f5e9 100%)', height: '140px' }}>
-                                <h4 className="fw-bold text-dark mt-2" style={{ width: '65%', lineHeight: '1.4', fontSize: '1.3rem' }}>
-                                    Ưu đãi không thể chối từ!
-                                </h4>
-                                <div className="position-absolute" style={{ top: '20px', right: '25px', fontSize: '3rem', color: '#0194f3' }}>
-                                    <i className="bi bi-gift"></i>
+                        <div className="p-4 px-md-5 px-3 text-center">
+                            {err && <Alert variant="danger" className="small py-2">{err}</Alert>}
+                            {loading && <div className="mb-3"><MySpinner /></div>}
+
+                            <div className="d-flex justify-content-center gap-3 mb-4 mt-3">
+                                <div style={{ position: 'relative', width: '150px', height: '40px' }}>
+                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
+                                        <SocialButton label="Google" iconSrc="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" />
+                                    </div>
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleSuccess}
+                                        onError={() => setErr("Lỗi Google")}
+                                        containerProps={{
+                                            style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ width: '150px', height: '40px' }}>
+                                    <FacebookLogin appId="1325779246184552" onSuccess={handleFacebookSuccess} render={({ onClick }) => (
+                                        <SocialButton onClick={onClick} iconSrc="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" label="Facebook" />
+                                    )} />
                                 </div>
                             </div>
-                            <div className="p-4 px-5 text-center mt-2">
-                                <div className="d-flex gap-3 mb-4">
-                                    <Button variant="light" className="flex-grow-1 rounded-pill border py-2 fw-bold text-dark bg-white shadow-sm">
-                                        <i className="bi bi-google me-2" style={{ color: '#DB4437' }}></i> Google
-                                    </Button>
-                                    <Button variant="light" className="flex-grow-1 rounded-pill border py-2 fw-bold text-dark bg-white shadow-sm">
-                                        <i className="bi bi-facebook me-2" style={{ color: '#4267B2' }}></i> Facebook
-                                    </Button>
-                                </div>
-                                <a href="#!" className="fw-bold text-primary text-decoration-none" onClick={(e) => { e.preventDefault(); setIsEmailMode(true); }}>
-                                    Tùy chọn khác
-                                </a>
-                            </div>
+
+                            <hr />
+                            <a href="#!" className="fw-bold text-primary text-decoration-none small" onClick={(e) => { e.preventDefault(); setIsEmailMode(true); }}>
+                                Đăng nhập bằng tài khoản Hotel Booking
+                            </a>
                         </div>
                     ) : (
                         <div className="p-4 p-md-5 bg-white">
-                            <div className="mb-4 text-center position-relative">
-                                <a href="#!" className="text-muted position-absolute start-0 top-0 mt-1" onClick={(e) => { e.preventDefault(); setIsEmailMode(false); }}>
-                                    <i className="bi bi-arrow-left fs-5"></i>
+                            <div className="d-flex align-items-center mb-4">
+                                <a href="#!" className="text-muted me-3" onClick={(e) => { e.preventDefault(); setIsEmailMode(false); }}>
+                                    <i className="bi bi-arrow-left fs-4"></i>
                                 </a>
-                                <h3 className="fw-bold text-primary">Hotel Booking</h3>
+                                <h4 className="fw-bold text-primary m-0">Đăng nhập</h4>
                             </div>
 
-                            {err && <Alert variant="danger" className="small py-2">{err}</Alert>}
-
                             <Form onSubmit={login}>
-                                {userInfo.map(u => (
-                                    <Form.Group className={u.field === 'password' ? "mb-4" : "mb-3"} key={u.field}>
-                                        <Form.Label className="small fw-semibold">{u.label}</Form.Label>
-                                        <Form.Control
-                                            type={u.type}
-                                            placeholder={u.type === 'password' ? "••••••••" : `Nhập ${u.label.toLowerCase()}...`}
-                                            className="rounded-3 py-2 shadow-sm border-light"
-                                            style={{ fontSize: '0.85rem' }}
-                                            value={user[u.field] || ""}
-                                            onChange={(e) => setUser({ ...user, [u.field]: e.target.value })}
-                                            required
-                                        />
-                                    </Form.Group>
-                                ))}
-
-                                {loading ? <MySpinner /> :
-                                    <Button type="submit" className="w-100 rounded-pill border-0 py-2 fw-bold" style={{ backgroundColor: '#0194f3' }}>
-                                        Đăng nhập
-                                    </Button>
-                                }
+                                <Form.Group className="mb-3">
+                                    <Form.Label className="small fw-bold">Tên đăng nhập</Form.Label>
+                                    <Form.Control type="text" placeholder="Nhập tên đăng nhập..." value={user.username || ""} onChange={(e) => setUser({ ...user, username: e.target.value })} required />
+                                </Form.Group>
+                                <Form.Group className="mb-4">
+                                    <Form.Label className="small fw-bold">Mật khẩu</Form.Label>
+                                    <Form.Control type="password" placeholder="Nhập mật khẩu..." value={user.password || ""} onChange={(e) => setUser({ ...user, password: e.target.value })} required />
+                                </Form.Group>
+                                <Button type="submit" className="w-100 rounded-pill border-0 py-2 fw-bold" style={{ backgroundColor: '#0194f3' }}>
+                                    Đăng nhập
+                                </Button>
                             </Form>
-
-                            <AuthSwitchFooter 
-                                text="Chưa có tài khoản?" 
-                                linkText="Đăng ký ngay" 
-                                onClick={() => { onHide(); if (showRegister) showRegister(); }} 
-                            />
+                            <AuthSwitchFooter text="Chưa có tài khoản?" linkText="Đăng ký ngay" onClick={() => { onHide(); if (showRegister) showRegister(); }} />
                         </div>
                     )}
                 </div>

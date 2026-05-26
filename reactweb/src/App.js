@@ -9,6 +9,7 @@ import myUserReducer from "./reducers/MyUserReducer";
 import RoomType from "./screens/Booking/RoomType";
 import Room from "./screens/Booking/Room";
 
+
 const App = () => {
   const [user, dispatch] = useReducer(myUserReducer, cookies.load("user") || null);
 
@@ -19,7 +20,9 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/room-types" element={<RoomType />} >
-            <Route path=":id/rooms" element={<Room />} />
+            <Route path=":id/rooms" element={<Room />} >
+              <Route path=":roomId/services" />
+            </Route>
           </Route>
         </Routes>
         <Footer />

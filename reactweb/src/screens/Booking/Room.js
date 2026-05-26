@@ -3,11 +3,17 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Badge, Pagination, Spinner } from 'react-bootstrap'; // Thêm Spinner
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Apis, { endpoints } from '../../configs/Apis';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
+import cookies from 'react-cookies';
+
 
 const Room = () => {
     const { id } = useParams(); 
     const [searchParams, setSearchParams] = useSearchParams();
     const contentSectionRef = useRef(null);
+
+    const roomTypeName = searchParams.get("roomTypeName") || `ID ${id}`;
 
     const currentRoomPage = parseInt(searchParams.get("roomPage") || "1", 10);
     const queryCheckIn = searchParams.get("checkIn") || "";
@@ -37,6 +43,41 @@ const Room = () => {
             contentSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, [id, queryCheckIn, queryCheckOut]);
+
+    useEffect(() => {
+        if (!id) 
+            return;
+
+        const stompClient = new Client({
+            webSocketFactory: () => new SockJS('http://localhost:8080/springserver/websocket'),
+            debug: (str) => console.log('STOMP Debug:', str), 
+            onConnect: () => {
+                console.log(`Connected Socket with RoomType ID: ${id}`);
+                
+                stompClient.subscribe(`/topic/room-type/${id}`, (message) => {
+                    if (message.body === "ROOM_UPDATED") {
+                        console.log("Message ROOM_UPDATED");
+                        
+                        if (searchParams.get("checkIn") && searchParams.get("checkOut")) {
+                            console.log("UPDATE ROOM LIST");
+                            handleFilterRooms(); 
+                        }
+                    }
+                });
+            },
+            onStompError: (frame) => {
+                console.error('Error Broker: ' + frame.headers['message']);
+            }
+        });
+        stompClient.activate();
+
+        return () => {
+            if (stompClient.active) {
+                stompClient.deactivate();
+                console.log(`Disconnected Socket with RoomType ID: ${id}`);
+            }
+        };
+    }, [id, searchParams]);
 
     const handleFilterRooms = async () => {
         if (!queryCheckIn || !queryCheckOut) 
@@ -109,7 +150,7 @@ const Room = () => {
                     <Col lg={8}>
                         <div className="d-flex justify-content-between align-items-center mb-4">
                             <h4 className="fw-bold text-dark mb-0">Các phòng hiện đang khả dụng</h4>
-                            <Badge bg="secondary" className="px-3 py-2 fs-6 rounded-pill">Loại phòng: {id}</Badge>
+                            <Badge bg="secondary" className="px-3 py-2 fs-6 rounded-pill">Loại phòng: {roomTypeName}</Badge>
                         </div>
 
                         {!searched ? (

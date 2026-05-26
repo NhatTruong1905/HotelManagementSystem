@@ -44,14 +44,12 @@ const RoomType = () => {
             
             const navEntries = window.performance.getEntriesByType("navigation");
             if (navEntries.length > 0 && navEntries[0].type === "reload") {
-                console.log("Đã phát hiện F5, tiến hành dọn dẹp URL!");
                 navigate('/room-types', { replace: true }); 
             }
         }
     }, []);
 
     useEffect(() => {
-        console.log("RoomType fetch API");
         loadRoomTypes();
     }, [currentRoomTypePage, queryKw, queryFromPrice, queryToPrice]);
 
@@ -82,6 +80,14 @@ const RoomType = () => {
             );
         }
         return items;
+    };
+
+    const getFilteredQueryString = () => {
+        const tempParams = new URLSearchParams(searchParams);
+        tempParams.delete("roomTypeName");
+        tempParams.delete("checkIn");
+        tempParams.delete("checkOut");
+        return tempParams.toString();
     };
 
     return (
@@ -150,7 +156,7 @@ const RoomType = () => {
                                                     {r.basePrice ? `${Number(r.basePrice).toLocaleString('vi-VN')}đ` : "Liên hệ"}
                                                     <span className="text-muted fw-normal" style={{ fontSize: '13px' }}> / đêm</span>
                                                 </span>
-                                                <Button as={Link} to={`/room-types/${r.id}/rooms?${searchParams.toString()}`} variant="outline-primary" className="fw-bold px-3">
+                                                <Button as={Link} to={`/room-types/${r.id}/rooms?${getFilteredQueryString()}&roomTypeName=${encodeURIComponent(r.name)}`} variant="outline-primary" className="fw-bold px-3">
                                                     Chọn loại phòng
                                                 </Button>
                                             </div>

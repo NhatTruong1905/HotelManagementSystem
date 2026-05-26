@@ -6,14 +6,18 @@ import LoginModal from '../screens/User/LoginModal';
 import RegisterModal from '../screens/User/RegisterModal';
 import { useContext } from "react";
 import { MyUserContext } from "../configs/Contexts";
+import cookies from 'react-cookies';
 
 const Header = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
 
-    const logout = () => {
-        dispatch({ "type": "LOGOUT" });
+    const logout = (e) => {
+        e.preventDefault();
+        cookies.remove('token', { path: '/' });
+        cookies.remove('user', { path: '/' });
+        dispatch({ type: "LOGOUT" });
     };
 
     return (
@@ -84,6 +88,9 @@ const Header = () => {
                                         className="rounded-circle me-2 border border-white"
                                         alt="avatar"
                                         style={{ objectFit: 'cover' }}
+                                        onError={(e) => {
+                                            e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+                                        }}
                                     />
                                     <span className="fw-bold me-3">{user.username}</span>
                                     <Button
