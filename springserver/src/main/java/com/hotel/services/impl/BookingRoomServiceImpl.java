@@ -3,10 +3,7 @@ package com.hotel.services.impl;
 import com.hotel.converter.BookingRoomConverter;
 import com.hotel.dto.BookingRoomDTO;
 import com.hotel.dto.BookingRoomDTO;
-import com.hotel.entity.Booking;
-import com.hotel.entity.BookingRoom;
-import com.hotel.entity.Customer;
-import com.hotel.entity.Room;
+import com.hotel.entity.*;
 import com.hotel.repositories.BookingRepository;
 import com.hotel.repositories.BookingRoomRepository;
 import com.hotel.repositories.RoomRepository;
@@ -14,6 +11,7 @@ import com.hotel.services.BookingRoomService;
 import com.hotel.services.BookingService;
 import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +23,9 @@ import java.util.Map;
 @Service
 @Transactional
 public class BookingRoomServiceImpl implements BookingRoomService {
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @Autowired
     private BookingRoomRepository bookingRoomRepository;
     @Autowired
@@ -72,18 +73,30 @@ public class BookingRoomServiceImpl implements BookingRoomService {
         } else {
             throw new RuntimeException("Không tìm thấy Đơn đặt phòng hoặc Phòng tương ứng!");
         }
-        this.bookingRoomRepository.addOrUpdate(bookingRoom);
+        Integer roomTypeId = this.bookingRoomRepository.addOrUpdateReturnObject(bookingRoom).getRoom().getType().getId();
         bookingService.recalculateTotalAmount(bookingRoomDTO.getBookingId());
+
+        messagingTemplate.convertAndSend("/topic/room-type/" + roomTypeId, "ROOM_UPDATED");
+        System.out.printf("Send Message to RoomType ID: %d\n", roomTypeId);
     }
 
     @Override
     public void delete(int id) {
+        Integer roomTypeId = this.bookingRoomRepository.get(id).getRoom().getType().getId();
         this.bookingRoomRepository.delete(id);
+        messagingTemplate.convertAndSend("/topic/room-type/" + roomTypeId, "ROOM_UPDATED");
+        System.out.printf("Send Message to RoomType ID: %d\n", roomTypeId);
     }
 
     @Override
     public void delete(List<Integer> ids) {
+        List<RoomType> listRoomType = this.bookingRoomRepository.listRoomType(ids);
         this.bookingRoomRepository.delete(ids);
+        System.out.println(listRoomType);
+        listRoomType.forEach(rt -> {
+            messagingTemplate.convertAndSend("/topic/room-type/" + rt.getId(), "ROOM_UPDATED");
+            System.out.printf("Send Message to RoomType ID: %d\n", rt.getId());
+        });
     }
 
     @Override

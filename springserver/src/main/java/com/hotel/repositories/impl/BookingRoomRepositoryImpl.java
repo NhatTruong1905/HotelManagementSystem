@@ -123,4 +123,36 @@ public class BookingRoomRepositoryImpl implements BookingRoomRepository {
         session.persist(entity);
         return entity;
     }
+
+    @Override
+    public BookingRoom addOrUpdateReturnObject(BookingRoom bookingRoom) {
+        Session session = this.factory.getObject().getCurrentSession();
+        if (bookingRoom.getId() == null) {
+            session.persist(bookingRoom);
+        } else {
+            session.merge(bookingRoom);
+        }
+        return bookingRoom;
+    }
+
+    @Override
+    public List<RoomType> listRoomType(List<Integer> idsBookingRoom) {
+        if (idsBookingRoom == null || idsBookingRoom.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<RoomType> criteriaQuery = builder.createQuery(RoomType.class);
+        Root<BookingRoom> bookingRoomRoot = criteriaQuery.from(BookingRoom.class);
+
+        Join<BookingRoom, Room> roomJoin = bookingRoomRoot.join("room", JoinType.INNER);
+        Join<Room, RoomType> roomTypeJoin = roomJoin.join("type", JoinType.INNER);
+
+        criteriaQuery.where(bookingRoomRoot.get("id").in(idsBookingRoom));
+
+        criteriaQuery.select(roomTypeJoin).distinct(true);
+
+        return session.createQuery(criteriaQuery).getResultList();
+    }
 }

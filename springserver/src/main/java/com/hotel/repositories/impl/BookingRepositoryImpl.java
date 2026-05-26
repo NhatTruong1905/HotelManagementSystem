@@ -14,6 +14,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -139,9 +140,17 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public List<Booking> findExpiredBookings(int minutes) {
         Session s = this.factory.getObject().getCurrentSession();
-        String hql = "SELECT b FROM Booking b WHERE b.status = 'PENDING' AND b.createdAt <= :expiryTime";
-        return s.createQuery(hql, Booking.class)
-                .setParameter("expiryTime", java.time.LocalDateTime.now().minusMinutes(minutes))
-                .getResultList();
+        CriteriaBuilder cb = s.getCriteriaBuilder();
+        CriteriaQuery<Booking> cq = cb.createQuery(Booking.class);
+        Root<Booking> root = cq.from(Booking.class);
+
+        Instant expiryTime = Instant.now().minusSeconds(minutes * 60L);
+
+        Predicate statusPredicate = cb.equal(root.get("status"), "PENDING");
+        Predicate expiryPredicate = cb.lessThanOrEqualTo(root.get("createdAt"), expiryTime);
+
+        cq.where(cb.and(statusPredicate, expiryPredicate));
+
+        return s.createQuery(cq).getResultList();
     }
 }
