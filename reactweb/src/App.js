@@ -9,6 +9,8 @@ import myUserReducer from "./reducers/MyUserReducer";
 import RoomType from "./screens/Booking/RoomType";
 import Room from "./screens/Booking/Room";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import Service from "./screens/Booking/Service";
+import Booking from "./screens/Booking/Booking";
 import Profile from "./screens/User/Profile";
 
 
@@ -17,21 +19,23 @@ const App = () => {
 
   return (
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-      <MyUserContext.Provider value={[user, dispatch]}>
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/room-types" element={<RoomType />} >
-              <Route path=":id/rooms" element={<Room />} >
-                <Route path=":roomId/services" />
-              </Route>
+    <MyUserContext.Provider value={[user, dispatch]}>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/room-types" element={<RoomType />} >
+            <Route path=":id/rooms" element={<Room />} >
+              <Route path="services" element={<Service />} />
             </Route>
-            <Route path="/profile" element={<Profile />}></Route>
-          </Routes>
-          <Footer />
-        </BrowserRouter>
-      </MyUserContext.Provider>
+          </Route>
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/profile" element={<Profile />}></Route>
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </MyUserContext.Provider>
+
     </GoogleOAuthProvider>
   );
 }

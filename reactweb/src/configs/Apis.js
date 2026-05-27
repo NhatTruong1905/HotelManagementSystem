@@ -6,6 +6,8 @@ export const endpoints = {
     'register': '/auth/register',
     'profile': '/secure/profile',
     'roomTypes': '/room-types',
+    'services': '/services',
+    'bookings': '/secure/bookings',
     'availableRooms': '/rooms/available',
     'google': '/auth/google',
     'facebook': '/auth/facebook',

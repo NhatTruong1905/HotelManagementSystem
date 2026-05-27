@@ -58,8 +58,7 @@ public class SpringSecurityConfigs {
         http.securityMatcher("/admin/**", "/", "/login")
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/websocket/**").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form.loginPage("/admin/login")
@@ -67,7 +66,9 @@ public class SpringSecurityConfigs {
                         .defaultSuccessUrl("/admin/", true)
                         .failureUrl("/admin/login?error=true")
                         .permitAll()
-                ).logout((logout) -> logout.logoutSuccessUrl("/admin/login").permitAll());
+                )
+                .logout((logout) -> logout.logoutSuccessUrl("/admin/login").permitAll());
+
 
         return http.build();
     }
