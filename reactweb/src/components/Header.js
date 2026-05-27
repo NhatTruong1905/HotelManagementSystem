@@ -105,6 +105,8 @@ const Header = () => {
                                         onClick={toggleMenu}
                                         style={{ cursor: 'pointer' }}
                                     >
+
+                                        
                                         <img
                                             src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
                                             width="38"
