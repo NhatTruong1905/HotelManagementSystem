@@ -4,13 +4,14 @@ import cookies from 'react-cookies';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./screens/Home/Home";
-import { MyUserContext } from "./configs/Contexts"; 
-import myUserReducer from "./reducers/MyUserReducer"; 
+import { MyUserContext } from "./configs/Contexts";
+import myUserReducer from "./reducers/MyUserReducer";
 import RoomType from "./screens/Booking/RoomType";
 import Room from "./screens/Booking/Room";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Service from "./screens/Booking/Service";
 import Booking from "./screens/Booking/Booking";
+import Profile from "./screens/User/Profile";
 
 
 const App = () => {
@@ -29,10 +30,12 @@ const App = () => {
             </Route>
           </Route>
           <Route path="/booking" element={<Booking />} />
+          <Route path="/profile" element={<Profile />}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>
     </MyUserContext.Provider>
+
     </GoogleOAuthProvider>
   );
 }
