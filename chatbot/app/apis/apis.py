@@ -26,3 +26,8 @@ async def chat(request: ChatRequest, session: Session = Depends(get_db)):
         ),
         media_type='text/plain'
     )
+@router.get('/chat')
+def hello():
+    return {
+        'message': 'Hello World!'
+    }
