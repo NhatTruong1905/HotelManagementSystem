@@ -24,8 +24,14 @@ async def chat(request: ChatRequest, session: Session = Depends(get_db)):
             session=session,
             faiss_index_path='/Users/tuan-nv0505/Projects/School/Hotel-Management-System/chatbot/data/vector_databases/faiss.index'
         ),
-        media_type='text/plain'
+        media_type='text/plain',
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
     )
+
 @router.get('/chat')
 def hello():
     return {
