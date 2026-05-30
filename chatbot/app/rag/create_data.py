@@ -89,6 +89,8 @@ def create_chunk(directory: str, session: Session):
     return chunk_contents, chunk_ids
 
 def create_vector_database(chunk_contents, chunk_ids, index_path: str, dimension: int = 1536, embedder=embed_batch):
+    os.makedirs('./app/data/vector_databases', exist_ok=True)
+
     if os.path.exists(index_path):
         faiss_index = faiss.read_index(index_path)
     else:
