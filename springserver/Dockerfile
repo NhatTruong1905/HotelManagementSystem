@@ -1,15 +1,18 @@
+
 FROM maven:3-openjdk-17 AS build
 WORKDIR /app
 
 COPY . .
-
 RUN mvn clean package -DskipTests
 
-FROM openjdk:17-jdk-slim
-WORKDIR /app
+
+FROM tomcat:10.1-jdk17-corretto
 
 
-COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.war demo.war
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","demo.war"]
+
+COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+
+EXPOSE 8080 
+
