@@ -26,10 +26,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
 public class BookingServiceImpl implements BookingService {
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
@@ -199,5 +204,16 @@ public class BookingServiceImpl implements BookingService {
         System.out.printf("Send Message to RoomType ID: %d\n", dto.getRooms().get(0).getRoomTypeId());
 
         return b.getId();
+    }
+
+    @Override
+    public void processCancelBooking(Integer bookingId, int minutes) {
+        Booking booking = this.bookingRepository.get(bookingId);
+        if (!booking.getStatus().equals(StatusBooking.PENDING.toString()))
+            return;
+
+        SCHEDULED_EXECUTOR_SERVICE.schedule(() -> {
+            this.bookingRepository.delete(bookingId);
+        }, minutes, TimeUnit.MINUTES);
     }
 }

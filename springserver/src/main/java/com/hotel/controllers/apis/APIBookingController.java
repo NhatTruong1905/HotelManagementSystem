@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
@@ -52,6 +53,7 @@ public class APIBookingController {
         response.put("message", "Tạo đơn đặt phòng thành công");
         response.put("bookingId", newBookingId);
 
+        this.bookingService.processCancelBooking(newBookingId, 1);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
