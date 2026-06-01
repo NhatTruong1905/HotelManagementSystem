@@ -41,7 +41,8 @@ public class ApiSecurityConfigs {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "https://hotel-system-pi-brown.vercel.app"
+                "https://hotel-system-pi-brown.vercel.app",
+                "https://hotel-system-be-3a25.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
