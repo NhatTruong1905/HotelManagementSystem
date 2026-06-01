@@ -18,6 +18,10 @@ const PaymentReturn = () => {
                     const queryString = searchParams.toString();
                     await Apis.get(`${endpoints["paymentVerify"]}?${queryString}`);
                     console.log("Database đã được cập nhật!");
+
+                    localStorage.removeItem('pendingBookingId');
+                    localStorage.removeItem('pendingBookingExpire');
+                    localStorage.removeItem('pendingPaymentUrl');
                 } catch (error) {
                     console.error("Lỗi cập nhật DB:", error);
                 }

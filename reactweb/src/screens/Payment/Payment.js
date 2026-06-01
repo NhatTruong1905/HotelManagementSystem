@@ -7,7 +7,7 @@ import { authApis, endpoints } from '../../configs/Apis';
 const Payment = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    
+
     const bookingId = location.state?.bookingId;
     // const totalPrice = location.state?.totalPrice;
 
@@ -30,16 +30,16 @@ const Payment = () => {
         try {
             if (paymentMethod === 'VNPAY') {
                 const payResponse = await authApis().get(`${endpoints["paymentCreate"]}?bookingId=${bookingId}`);
-                
+
                 if (payResponse.data && payResponse.data.url) {
                     const width = 600;
                     const height = 750;
                     const left = (window.screen.width / 2) - (width / 2);
                     const top = (window.screen.height / 2) - (height / 2);
-                    
+
                     const paymentWindow = window.open(
-                        payResponse.data.url, 
-                        'VnPayPaymentWindow', 
+                        payResponse.data.url,
+                        'VnPayPaymentWindow',
                         `width=${width},height=${height},top=${top},left=${left},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`
                     );
 

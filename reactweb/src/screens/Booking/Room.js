@@ -7,21 +7,30 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 
 const Room = () => {
-    const { id } = useParams(); 
+    const { id } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
-    const location = useLocation(); 
-    const contentSectionRef = useRef(null); 
+    const location = useLocation();
+    const contentSectionRef = useRef(null);
+    const serviceSectionRef = useRef(null);
 
     const roomTypeName = searchParams.get("roomTypeName") || `ID ${id}`;
-
+    const queryServices = searchParams.get("services") || "";
     const currentRoomPage = parseInt(searchParams.get("roomPage") || "1", 10);
     const queryCheckIn = searchParams.get("checkIn") || "";
     const queryCheckOut = searchParams.get("checkOut") || "";
     const roomPrice = searchParams.get("roomPrice") || "0";
-    
+
     const [rooms, setRooms] = useState([]);
-    const [totalRoomPages, setTotalRoomPages] = useState(1); 
-    const [selectedRooms, setSelectedRooms] = useState([]);
+    const [totalRoomPages, setTotalRoomPages] = useState(1);
+    const queryRoomsParams = searchParams.get("roomsParams") || "";
+    const [selectedRooms, setSelectedRooms] = useState(() => {
+        if (!queryRoomsParams) return [];
+        return queryRoomsParams.split(',').map(r => ({
+            id: Number(r.split('_')[0]),
+            roomNumber: r.split('_')[1],
+            price: Number(r.split('_')[2]) || 0
+        }));
+    });
 
     const [expectedCheckIn, setExpectedCheckIn] = useState(queryCheckIn);
     const [expectedCheckOut, setExpectedCheckOut] = useState(queryCheckOut);
@@ -35,10 +44,10 @@ const Room = () => {
     }, [queryCheckIn, queryCheckOut]);
 
     useEffect(() => {
-        setRooms([]); 
+        setRooms([]);
         setTotalRoomPages(1);
-        setSelectedRooms([]); 
-        
+        // setSelectedRooms([]);
+
         if (!queryCheckIn || !queryCheckOut) {
             setSearched(false);
         }
@@ -90,7 +99,7 @@ const Room = () => {
         if (!id) return;
 
         const stompClient = new Client({
-            webSocketFactory: () => new SockJS('http://localhost:8080/springserver/websocket'),
+            webSocketFactory: () => new SockJS(`${process.env.REACT_APP_API_BASE_URL}/websocket`),
             debug: (str) => console.log('STOMP Debug:', str),
             onConnect: () => {
                 stompClient.subscribe(`/topic/room-type/${id}`, (message) => {
@@ -119,9 +128,21 @@ const Room = () => {
         }
     }, [id, queryCheckIn, queryCheckOut, currentRoomPage, handleFilterRooms]);
 
+    useEffect(() => {
+        if (isServicePage && serviceSectionRef.current) {
+            setTimeout(() => {
+                serviceSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }, [isServicePage]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const currentParams = Object.fromEntries([...searchParams]);
+
+        delete currentParams.roomsParams;
+        delete currentParams.services;
+        setSelectedRooms([]);
         setSearchParams({ ...currentParams, checkIn: expectedCheckIn, checkOut: expectedCheckOut, roomPage: 1 });
     };
 
@@ -136,9 +157,9 @@ const Room = () => {
         setSelectedRooms(prev => {
             const isExist = prev.find(r => r.id === roomId);
             if (isExist) {
-                return prev.filter(r => r.id !== roomId); 
+                return prev.filter(r => r.id !== roomId);
             } else {
-                return [...prev, { id: roomId, roomNumber, price }]; 
+                return [...prev, { id: roomId, roomNumber, price }];
             }
         });
     };
@@ -147,8 +168,12 @@ const Room = () => {
         // const ids = selectedRooms.map(r => r.id).join(',');
         // const nums = selectedRooms.map(r => r.roomNumber).join(',');
         const roomsParams = selectedRooms.map(r => `${r.id}_${r.roomNumber}_${roomPrice}`).join(',');
+        let url = `/room-types/${id}/rooms/services?checkIn=${expectedCheckIn}&checkOut=${expectedCheckOut}&roomTypeName=${encodeURIComponent(roomTypeName)}&roomPrice=${roomPrice}&roomsParams=${encodeURIComponent(roomsParams)}`;
+        if (queryServices) {
+            url += `&services=${encodeURIComponent(queryServices)}`;
+        }
 
-        return `/room-types/${id}/rooms/services?checkIn=${expectedCheckIn}&checkOut=${expectedCheckOut}&roomTypeName=${encodeURIComponent(roomTypeName)}&roomsParams=${encodeURIComponent(roomsParams)}`;
+        return url;
     };
 
     const renderRoomPageItems = () => {
@@ -166,8 +191,7 @@ const Room = () => {
     return (
         <div className="room-detail-roomPage" style={{ position: 'relative' }}>
             <Container ref={contentSectionRef} style={{ marginTop: '-40px', position: 'relative', zIndex: 10 }} className="mb-5">
-                
-                {/* BỐ CỤC: BỘ CHỌN THỜI GIAN THEO HÀNG NGANG */}
+
                 <Card className="border-0 shadow-lg rounded-4 p-4 bg-white mb-5">
                     <Form onSubmit={handleSubmit}>
                         <Row className="g-3 align-items-end">
@@ -176,12 +200,12 @@ const Room = () => {
                                     <Form.Label className="fw-bold text-muted small">
                                         <i className="bi bi-calendar-check-fill me-2 text-primary"></i>Ngày nhận phòng
                                     </Form.Label>
-                                    <Form.Control 
-                                        type="date" 
-                                        min={new Date().toISOString().split('T')[0]} 
-                                        value={expectedCheckIn} 
-                                        onChange={(e) => setExpectedCheckIn(e.target.value)} 
-                                        required 
+                                    <Form.Control
+                                        type="date"
+                                        min={new Date().toISOString().split('T')[0]}
+                                        value={expectedCheckIn}
+                                        onChange={(e) => setExpectedCheckIn(e.target.value)}
+                                        required
                                     />
                                 </Form.Group>
                             </Col>
@@ -190,12 +214,12 @@ const Room = () => {
                                     <Form.Label className="fw-bold text-muted small">
                                         <i className="bi bi-calendar-x-fill me-2 text-primary"></i>Ngày trả phòng
                                     </Form.Label>
-                                    <Form.Control 
-                                        type="date" 
-                                        min={expectedCheckIn || new Date().toISOString().split('T')[0]} 
-                                        value={expectedCheckOut} 
-                                        onChange={(e) => setExpectedCheckOut(e.target.value)} 
-                                        required 
+                                    <Form.Control
+                                        type="date"
+                                        min={expectedCheckIn || new Date().toISOString().split('T')[0]}
+                                        value={expectedCheckOut}
+                                        onChange={(e) => setExpectedCheckOut(e.target.value)}
+                                        required
                                     />
                                 </Form.Group>
                             </Col>
@@ -208,7 +232,6 @@ const Room = () => {
                     </Form>
                 </Card>
 
-                {/* BỐ CỤC DANH SÁCH PHÒNG FULL-WIDTH PHÍA DƯỚI */}
                 <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                     <h4 className="fw-bold text-dark mb-0">Các phòng hiện đang khả dụng</h4>
                     <Badge bg="secondary" className="px-3 py-2 fs-6 rounded-pill">Loại phòng: {roomTypeName}</Badge>
@@ -227,7 +250,7 @@ const Room = () => {
                                 const isSelected = selectedRooms.some(r => r.id === room.id);
                                 return (
                                     <Col lg={4} md={6} key={room.id}>
-                                        <Card 
+                                        <Card
                                             className="border-0 shadow-sm rounded-4 p-4 h-100"
                                             style={{
                                                 backgroundColor: isSelected ? '#f0f8ff' : '#ffffff',
@@ -247,8 +270,8 @@ const Room = () => {
                                             <div className="border-top pt-3 d-flex justify-content-between align-items-center">
                                                 <Button
                                                     onClick={() => handleToggleRoom(room.id, room.roomNumber)}
-                                                    size="sm" 
-                                                    className="fw-bold px-4" 
+                                                    size="sm"
+                                                    className="fw-bold px-4"
                                                     variant={isSelected ? "primary" : "outline-primary"}
                                                 >
                                                     {isSelected ? <><i className="bi bi-check2-circle me-1"></i> Đã chọn</> : "Chọn phòng"}
@@ -279,14 +302,13 @@ const Room = () => {
                 )}
             </Container>
 
-            {/* TỐI ƯU: WIDGET NỔI NHỎ GỌN PHÍA GÓC PHẢI - TỰ ĐỘNG ẨN KHI VÀO SERVICE */}
             {selectedRooms.length > 0 && !isServicePage && (
-                <Card 
+                <Card
                     className="position-fixed shadow-lg border-0 rounded-4 p-3 d-flex align-items-center justify-content-center border"
-                    style={{ 
-                        bottom: '24px', 
-                        right: '24px', 
-                        zIndex: 1050, 
+                    style={{
+                        bottom: '24px',
+                        right: '24px',
+                        zIndex: 1050,
                         backgroundColor: 'rgba(255, 255, 255, 0.95)',
                         backdropFilter: 'blur(6px)',
                         width: 'auto'
@@ -296,11 +318,11 @@ const Room = () => {
                         <div className="small fw-bold text-dark text-nowrap">
                             Đã chọn: <Badge bg="primary" className="ms-1 px-2 py-1 fs-6">{selectedRooms.length}</Badge> phòng
                         </div>
-                        <Button 
+                        <Button
                             as={Link}
-                            to={getURL()} 
+                            to={getURL()}
                             size="sm"
-                            className="fw-bold px-3 py-2 rounded-3 text-nowrap" 
+                            className="fw-bold px-3 py-2 rounded-3 text-nowrap"
                             style={{ backgroundColor: '#0194f3', border: 'none' }}
                         >
                             Tiếp tục đặt phòng <i className="bi bi-arrow-right-short ms-1"></i>
@@ -309,7 +331,7 @@ const Room = () => {
                 </Card>
             )}
 
-            <div className="service-container">
+            <div ref={serviceSectionRef} className="service-container">
                 <Outlet />
             </div>
         </div>
