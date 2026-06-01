@@ -204,8 +204,8 @@ const Booking = () => {
         <div className="booking-page bg-light pb-5">
             <HeroBanner title="Hoàn tất đặt phòng" subtitle="Vui lòng điền thông tin chi tiết để chúng tôi chuẩn bị tốt nhất cho kỳ nghỉ của bạn" height="450px" />
 
-            <Container style={{ marginTop: '-40px', position: 'relative', zIndex: 10 }}>
-                <Form onSubmit={handleCreateBooking} noValidate>
+            <Container style={{ marginTop: '30px', position: 'relative', zIndex: 10 }}>
+                <Form onSubmit={handleCreateBooking} noValidate >
                     <Row className="g-4">
                         <Col lg={7}>
                             <Card className={`border-0 shadow-lg rounded-4 p-4 h-100 ${isPaymentStep ? 'opacity-75' : ''}`}>
@@ -270,9 +270,35 @@ const Booking = () => {
                                 </ListGroup>
 
                                 {!isPaymentStep ? (
-                                    <Button type="submit" size="lg" className="w-100 fw-bold rounded-3 py-3 shadow-sm mt-auto" style={{ backgroundColor: '#ff5e1f', border: 'none' }} disabled={isSubmitting}>
-                                        {isSubmitting ? "ĐANG XỬ LÝ..." : "HOÀN TẤT ĐẶT PHÒNG"}
-                                    </Button>
+                                    <div className="d-flex gap-3 mt-auto pt-3">
+
+                                        <Button
+                                            type="button"
+                                            variant="outline-secondary"
+                                            size="lg"
+                                            className="fw-bold rounded-3 py-3 d-flex align-items-center justify-content-center"
+                                            style={{ width: '40%' }}
+                                            onClick={() => {
+                                                const currentRoomPrice = selectRooms.length > 0 ? selectRooms[0].price : 0;
+                                                const backUrl = `/room-types/${roomTypeId}/rooms/services?checkIn=${checkIn}&checkOut=${checkOut}&roomTypeName=${encodeURIComponent(roomTypeName)}&roomPrice=${currentRoomPrice}&roomsParams=${encodeURIComponent(rooms)}&services=${encodeURIComponent(services)}&roomTypeId=${roomTypeId}`;
+
+                                                navigate(backUrl);
+                                            }}
+                                            disabled={isSubmitting}
+                                        >
+                                            <i className="bi bi-arrow-left me-2"></i> Trở lại
+                                        </Button>
+
+                                        <Button
+                                            type="submit"
+                                            size="lg"
+                                            className="fw-bold rounded-3 py-3 shadow-sm d-flex align-items-center justify-content-center"
+                                            style={{ backgroundColor: '#ff5e1f', border: 'none', width: '60%', color: 'white' }}
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? "ĐANG XỬ LÝ..." : "HOÀN TẤT ĐẶT PHÒNG"}
+                                        </Button>
+                                    </div>
                                 ) : (
                                     <Button type="button" size="lg" className="w-100 fw-bold rounded-3 py-3 mt-auto border-0" style={{ backgroundColor: '#28a745', cursor: 'default' }}>
                                         <i className="bi bi-check-circle-fill me-2"></i> ĐÃ TẠO ĐƠN HÀNG

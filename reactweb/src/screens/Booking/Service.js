@@ -6,7 +6,7 @@ import Apis, { endpoints } from '../../configs/Apis';
 import LoginModal from '../User/LoginModal';
 import cookies from 'react-cookies';
 
-let isFirstLoad = true;
+// let isFirstLoad = true;
 
 const Service = () => {
     const user = cookies.load('user') || null;
@@ -18,7 +18,7 @@ const Service = () => {
     const queryCheckOut = searchParams.get("checkOut") || "";
     const roomTypeName = searchParams.get("roomTypeName") || `Loại phòng ID ${roomTypeId}`;
     const roomParams = searchParams.get("roomsParams") || ""; // "id_roomNumber_price,id_roomNumber_price"
-
+    const queryServices = searchParams.get("services") || "";
     const [services, setServices] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
 
@@ -27,7 +27,18 @@ const Service = () => {
     const queryFromPrice = searchParams.get("fromPrice") || "";
     const queryToPrice = searchParams.get("toPrice") || "";
 
-    const [selectedServices, setSelectedServices] = useState([]);
+    const [selectedServices, setSelectedServices] = useState(() => {
+        if (!queryServices) return [];
+        return queryServices.split(',').map(s => {
+            const parts = s.split('_');
+            return {
+                id: Number(parts[0]),
+                name: parts[1],
+                price: Number(parts[2]) || 0,
+                quantity: Number(parts[3]) || 0
+            };
+        });
+    });
 
     const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -46,16 +57,16 @@ const Service = () => {
         }
     }, [currentServicePage, queryKw, queryFromPrice, queryToPrice]);
 
-    useEffect(() => {
-        if (isFirstLoad) {
-            isFirstLoad = false;
+    // useEffect(() => {
+    //     if (isFirstLoad) {
+    //         isFirstLoad = false;
 
-            const navEntries = window.performance.getEntriesByType("navigation");
-            if (navEntries.length > 0 && navEntries[0].type === "reload") {
-                navigate(`/room-types/${roomTypeId}/services`, { replace: true });
-            }
-        }
-    }, [navigate, roomTypeId]);
+    //         const navEntries = window.performance.getEntriesByType("navigation");
+    //         if (navEntries.length > 0 && navEntries[0].type === "reload") {
+    //             navigate(`/room-types/${roomTypeId}/services`, { replace: true });
+    //         }
+    //     }
+    // }, [navigate, roomTypeId]);
 
     useEffect(() => {
         loadServices();
@@ -234,6 +245,26 @@ const Service = () => {
                 }}
             >
                 <div className="d-flex align-items-center gap-3">
+                    <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        className="fw-bold px-3 py-2 rounded-3 text-nowrap"
+                        onClick={() => {
+                            const currentParams = new URLSearchParams(searchParams);
+                            const selectedServiceStrings = selectedServices.map(service =>
+                                `${service.id}_${service.name}_${service.price}_${service.quantity}`
+                            );
+                            if (selectedServiceStrings.length > 0) {
+                                currentParams.set('services', selectedServiceStrings.join(','));
+                            } else {
+                                currentParams.delete('services');
+                            }
+                            navigate(`/room-types/${roomTypeId}/rooms?${currentParams.toString()}`);
+                        }}
+                    >
+                        <i className="bi bi-arrow-left me-1"></i> Trở lại phòng
+                    </Button>
+
                     {totalItemsCount > 0 && (
                         <div className="small fw-bold text-dark text-nowrap">
                             Dịch vụ: <Badge bg="warning" className="ms-1 px-2 py-1 fs-6 text-dark">{totalItemsCount}</Badge>

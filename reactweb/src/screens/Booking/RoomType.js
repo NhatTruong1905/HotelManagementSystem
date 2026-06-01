@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams, Link, Outlet, useNavigate } from 'react-router-dom';
+import { useSearchParams, Link, Outlet } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Pagination } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Apis, { endpoints } from '../../configs/Apis';
 import HeroBanner from '../../components/HeroBanner';
 import cookies from 'react-cookies';
 
-let isFirstLoad = true;
+// let isFirstLoad = true;
 
 const RoomType = () => {
     console.log(cookies.load('user'))
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const [roomTypes, setRoomTypes] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
@@ -40,16 +40,16 @@ const RoomType = () => {
         }
     }, [currentRoomTypePage, queryKw, queryFromPrice, queryToPrice]);
 
-    useEffect(() => {
-        if (isFirstLoad) {
-            isFirstLoad = false;
+    // useEffect(() => {
+    //     if (isFirstLoad) {
+    //         isFirstLoad = false;
 
-            const navEntries = window.performance.getEntriesByType("navigation");
-            if (navEntries.length > 0 && navEntries[0].type === "reload") {
-                navigate('/room-types', { replace: true });
-            }
-        }
-    }, [navigate]);
+    //         const navEntries = window.performance.getEntriesByType("navigation");
+    //         if (navEntries.length > 0 && navEntries[0].type === "reload") {
+    //             navigate('/room-types', { replace: true });
+    //         }
+    //     }
+    // }, [navigate]);
 
     useEffect(() => {
         loadRoomTypes();
