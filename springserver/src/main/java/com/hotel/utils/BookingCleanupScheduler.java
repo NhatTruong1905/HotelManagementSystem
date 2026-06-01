@@ -23,7 +23,7 @@ public class BookingCleanupScheduler {
     private MailService mailService;
 
     //    @Scheduled(fixedRate = 10000)
-    @Scheduled(fixedRate = 60000)
+//    @Scheduled(fixedRate = 60000)
     public void autoCancelBookings() {
         try {
             List<Booking> expiredBookings = bookingRepository.findExpiredBookings(15);

@@ -118,6 +118,19 @@ const Booking = () => {
 
     const handleCreateBooking = async (e) => {
         e.preventDefault();
+
+        const pendingId = localStorage.getItem('pendingBookingId');
+        const expireTime = localStorage.getItem('pendingBookingExpire');
+        const pendingUrl = localStorage.getItem('pendingPaymentUrl');
+
+        if (pendingId && expireTime && Date.now() < parseInt(expireTime, 10)) {
+            alert(`⚠️ TẠM DỪNG: Bạn đang có đơn đặt phòng #${pendingId} chưa thanh toán!\n\nVui lòng hoàn tất thanh toán đơn cũ, hoặc chờ hết 15 phút để hệ thống hủy đơn cũ trước khi đặt phòng mới để tránh tình trạng giam phòng.`);
+
+            if (pendingUrl) {
+                navigate(pendingUrl, { replace: true });
+            }
+            return; 
+        }
         const cleanedCustomer = {
             fullName: customer.fullName.trim(),
             email: customer.email.trim(),
@@ -152,6 +165,11 @@ const Booking = () => {
         try {
             const response = await authApis().post(endpoints["bookings"], finalBookingData);
             const bookingId = response.data.bookingId || "TMP_999";
+
+            const paymentUrl = `/booking/payment?${searchParams.toString()}`;
+            localStorage.setItem('pendingBookingId', bookingId);
+            localStorage.setItem('pendingPaymentUrl', paymentUrl);
+            localStorage.setItem('pendingBookingExpire', Date.now() + 15 * 60 * 1000);
 
             navigate(`payment?${searchParams.toString()}`, {
                 state: { bookingId: bookingId, totalPrice: totalPrice },
