@@ -1,15 +1,15 @@
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3-openjdk-17 AS build
 WORKDIR /app
 
 COPY . .
 
 RUN mvn clean package -DskipTests
 
-FROM tomcat:10.1-jdk17-corretto
+FROM openjdk:17-jdk-slim
+WORKDIR /app
 
-RUN rm -rf /usr/local/tomcat/webapps/*
 
-
-COPY --from=build /app/target/DrComputer-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.war demo.war
 
 EXPOSE 8080
+ENTRYPOINT ["java","-jar","demo.war"]
