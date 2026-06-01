@@ -15,6 +15,7 @@ import Profile from "./screens/User/Profile";
 import Chatbot from "./components/Chatbot";
 import Payment from "./screens/Payment/Payment";
 import PaymentReturn from "./screens/Payment/PaymentReturn";
+import GlobalPaymentWidget from "./components/GlobalPaymentWidget";
 
 
 
@@ -25,6 +26,7 @@ const App = () => {
       <MyUserContext.Provider value={[user, dispatch]}>
         <BrowserRouter>
           <Header />
+          <GlobalPaymentWidget />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/room-types" element={<RoomType />} >
