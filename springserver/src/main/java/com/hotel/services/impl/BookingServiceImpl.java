@@ -13,6 +13,7 @@ import com.hotel.exceptions.NotFoundBookingException;
 import com.hotel.exceptions.NotFoundUser;
 import com.hotel.repositories.*;
 import com.hotel.services.BookingService;
+import com.hotel.services.MailService;
 import jakarta.persistence.NoResultException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
 public class BookingServiceImpl implements BookingService {
-
-
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
@@ -58,6 +53,8 @@ public class BookingServiceImpl implements BookingService {
     private UserRepository userRepository;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private MailService mailService;
 
 
     @Override
@@ -207,6 +204,7 @@ public class BookingServiceImpl implements BookingService {
         this.simpMessagingTemplate.convertAndSend("/topic/room-type/" + dto.getRooms().get(0).getRoomTypeId(), "ROOM_UPDATED");
         System.out.printf("Send Message to RoomType ID: %d\n", dto.getRooms().get(0).getRoomTypeId());
 
+        this.mailService.sendBookingConfirmation(dto);
         return b.getId();
     }
 
@@ -225,6 +223,4 @@ public class BookingServiceImpl implements BookingService {
                 }
         );
     }
-
-
 }

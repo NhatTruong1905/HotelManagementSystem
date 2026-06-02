@@ -22,22 +22,22 @@
     </div>
 
     <div class="alert-box">
-        <p>Kính gửi <strong><span th:text="${booking.customerName}">Quý khách</span></strong>,</p>
+        <p>Kính gửi <strong><span th:text="${booking.customer.fullName}">Quý khách</span></strong>,</p>
         <p>Chúng tôi rất tiếc phải thông báo rằng yêu cầu đặt phòng của Quý khách đã bị <strong>tự động huỷ</strong> do hệ thống không ghi nhận khoản thanh toán nào được thực hiện trong vòng 15 phút kể từ lúc tạo giao dịch.</p>
         <p>Nếu Quý khách vẫn có nhu cầu lưu trú, vui lòng truy cập website của chúng tôi để thực hiện lại quá trình đặt phòng. Giá phòng và tình trạng phòng có thể thay đổi so với lần đặt trước.</p>
     </div>
 
-    <div class="section info-text" th:if="${not #strings.isEmpty(booking.customerEmail)}">
+    <div class="section info-text" th:if="${not #strings.isEmpty(booking.customer.email)}">
         <h2>Thông tin Khách hàng</h2>
-        <p><strong>Họ và tên:</strong> <span th:text="${booking.customerName}"></span></p>
-        <p><strong>Email:</strong> <span th:text="${booking.customerEmail}"></span></p>
+        <p><strong>Họ và tên:</strong> <span th:text="${booking.customer.fullName}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${booking.customer.email}"></span></p>
     </div>
 
     <div class="section info-text">
         <h2>Chi tiết Đặt phòng (Đã Huỷ)</h2>
         <p><strong>Ngày Check-in dự kiến:</strong> <span th:text="${booking.expectedCheckIn}"></span></p>
         <p><strong>Ngày Check-out dự kiến:</strong> <span th:text="${booking.expectedCheckOut}"></span></p>
-        <p><strong>Tổng tiền:</strong> <span th:text="${booking.totalAmount} + ' VND'"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="${booking.totalPrice} + ' VND'"></span></p>
     </div>
 
     <div class="footer">

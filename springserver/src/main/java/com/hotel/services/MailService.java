@@ -6,5 +6,5 @@ import com.hotel.entity.Booking;
 
 public interface MailService {
     void sendBookingConfirmation(RequestBookingDTO booking);
-    void sendBookingCancellationDueToTimeout(BookingCancelDTO booking);
+    void sendBookingCancellationDueToTimeout(Integer bookingId);
 }

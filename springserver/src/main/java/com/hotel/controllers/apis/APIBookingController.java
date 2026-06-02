@@ -12,15 +12,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
 public class APIBookingController {
     @Autowired
     private BookingService bookingService;
-    @Autowired
-    private MailService mailService;
 
     @DeleteMapping("/bookings/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -44,15 +41,14 @@ public class APIBookingController {
 
     @PostMapping("/secure/bookings")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Map<String, Object>> addBooking(@RequestBody RequestBookingDTO dto) {
-        Integer newBookingId = this.bookingService.processAddBooking(dto);
-        this.mailService.sendBookingConfirmation(dto);
+    public ResponseEntity<Map<String, Object>> addBooking(@RequestBody RequestBookingDTO booking) {
+        Integer newBookingId = this.bookingService.processAddBooking(booking);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", "SUCCESS");
         response.put("message", "Tạo đơn đặt phòng thành công");
         response.put("bookingId", newBookingId);
-        this.bookingService.scheduleCancelBooking(newBookingId, 15);
+        this.bookingService.scheduleCancelBooking(newBookingId,15);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

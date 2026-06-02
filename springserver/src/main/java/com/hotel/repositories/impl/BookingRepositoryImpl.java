@@ -128,7 +128,10 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public Booking get(int id) {
         Session session = this.factory.getObject().getCurrentSession();
-        return session.get(Booking.class, id);
+        return session.createQuery(
+                "select b from Booking b " + "join fetch b.customer " + "where b.id = :id", Booking.class)
+                .setParameter("id", id)
+                .uniqueResult();
     }
 
     @Override
