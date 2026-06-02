@@ -6,7 +6,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 
-FROM tomcat:10.1-jdk17-corretto
+FROM tomcat:11.1-jdk17-corretto
 
 
 RUN rm -rf /usr/local/tomcat/webapps/*
