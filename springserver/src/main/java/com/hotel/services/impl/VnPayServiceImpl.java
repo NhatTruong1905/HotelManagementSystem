@@ -52,17 +52,20 @@ public class VnPayServiceImpl implements VnPayService {
         Booking booking = bookingRepository.get(bookingId);
         if (booking == null) throw new RuntimeException("Đơn đặt phòng không tồn tại!");
 
-        Payment pendingPayment = new Payment();
-        pendingPayment.setBooking(booking);
-        pendingPayment.setAmount(booking.getTotalAmount());
-        pendingPayment.setPaymentMethod(PaymentMethod.VNPAY.name());
-        pendingPayment.setStatus(StatusPayment.PENDING.name());
-        pendingPayment.setPaymentContext(PaymentContext.PAYMENT.name());
-        pendingPayment.setNote("Đang chờ thanh toán qua VNPAY");
+        Payment pendingPayment = paymentRepository.getPendingPaymentByBookingId(bookingId);
 
-        pendingPayment = paymentRepository.save(pendingPayment);
+        if (pendingPayment == null) {
+            pendingPayment = new Payment();
+            pendingPayment.setBooking(booking);
+            pendingPayment.setAmount(booking.getTotalAmount());
+            pendingPayment.setPaymentMethod(PaymentMethod.VNPAY.name());
+            pendingPayment.setStatus(StatusPayment.PENDING.name());
+            pendingPayment.setPaymentContext(PaymentContext.PAYMENT.name());
+            pendingPayment.setNote("Đang chờ thanh toán qua VNPAY");
 
-        long amount = booking.getTotalAmount().longValue();
+            pendingPayment = paymentRepository.save(pendingPayment);
+        }
+        long amount = pendingPayment.getAmount().longValue();
 
         Map<String, String> vnp_Params = new TreeMap<>();
         vnp_Params.put("vnp_Version", "2.1.0");

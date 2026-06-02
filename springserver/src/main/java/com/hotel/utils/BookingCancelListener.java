@@ -18,10 +18,11 @@ public class BookingCancelListener {
 
     @RabbitListener(queues = RabbitMQConfig.CANCEL_QUEUE)
     @Transactional
-    public void receiveCancelMessage(Integer bookingId) {
-        System.out.println("Đã nhận được tin nhắn quá hạn cho Booking #" + bookingId);
-
+    public void receiveCancelMessage(String messageStr) {
         try {
+            Integer bookingId = Integer.parseInt(messageStr);
+            System.out.println("Đã nhận được tin nhắn quá hạn cho Booking #" + bookingId);
+
             bookingRepository.processExpiredBooking(bookingId);
             this.mailService.sendBookingCancellationDueToTimeout(bookingId);
         } catch (Exception e) {
