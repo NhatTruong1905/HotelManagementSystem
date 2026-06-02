@@ -12,8 +12,8 @@ public class RequestBookingDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate expectedCheckIn;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Integer id;
     private LocalDate expectedCheckOut;
+    private Integer id;
     private List<DetailRoomDTO> rooms;
     private List<DetailServiceDTO> services;
     private DetailCustomerDTO customer;
