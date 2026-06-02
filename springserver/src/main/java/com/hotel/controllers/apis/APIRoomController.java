@@ -17,7 +17,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @PropertySource("classpath:configs.properties")
-@CrossOrigin
 public class APIRoomController {
     @Autowired
     private RoomService roomService;
