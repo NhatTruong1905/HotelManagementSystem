@@ -216,7 +216,7 @@ public class BookingServiceImpl implements BookingService {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE_NAME,
                 RabbitMQConfig.DELAY_ROUTING_KEY,
-                bookingId,
+                String.valueOf(bookingId),
                 message -> {
                     message.getMessageProperties().setExpiration(String.valueOf(expirationTime));
                     return message;

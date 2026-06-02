@@ -117,4 +117,20 @@ public class PaymentRepositoryImpl implements PaymentRepository {
         session.persist(entity);
         return entity;
     }
+
+    @Override
+    public Payment getPendingPaymentByBookingId(Integer bookingId) {
+        Session session = this.factory.getObject().getCurrentSession();
+
+        Query query = session.createQuery("FROM Payment p WHERE p.booking.id = :bId AND p.status = 'PENDING'", Payment.class);
+        query.setParameter("bId", bookingId);
+
+        query.setMaxResults(1);
+
+        List<?> results = query.getResultList();
+        if (results.isEmpty()) {
+            return null;
+        }
+        return (Payment) results.get(0);
+    }
 }

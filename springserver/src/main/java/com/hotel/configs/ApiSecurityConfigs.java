@@ -28,7 +28,7 @@ public class ApiSecurityConfigs {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/secure/**").authenticated()
-                        .requestMatchers("/api/payment/**").authenticated()
+                        .requestMatchers("/api/payment/**").permitAll()
                         .anyRequest().permitAll()
                 ).addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
