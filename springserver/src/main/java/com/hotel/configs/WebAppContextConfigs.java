@@ -38,12 +38,23 @@ import java.util.concurrent.Executor;
 @Import(WebSocketConfig.class)
 @EnableAsync
 @PropertySources({
-        @PropertySource("classpath:secret/databases.properties"),
-        @PropertySource("classpath:secret/login.properties"),
-        @PropertySource("classpath:secret/jwt.properties"),
-        @PropertySource("classpath:secret/vnpay.properties"),
-        @PropertySource("classpath:secret/mail.properties"),
-        @PropertySource("classpath:secret/rabbitmq.properties")
+        @PropertySource(value = "classpath:secret/databases.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/secrets/databases.properties", ignoreResourceNotFound = true),
+
+        @PropertySource(value = "classpath:secret/login.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/secrets/login.properties", ignoreResourceNotFound = true),
+
+        @PropertySource(value = "classpath:secret/jwt.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/secrets/jwt.properties", ignoreResourceNotFound = true),
+
+        @PropertySource(value = "classpath:secret/vnpay.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/secrets/vnpay.properties", ignoreResourceNotFound = true),
+
+        @PropertySource(value = "classpath:secret/mail.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/secrets/mail.properties", ignoreResourceNotFound = true),
+
+        @PropertySource(value = "classpath:secret/rabbitmq.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/secrets/rabbitmq.properties", ignoreResourceNotFound = true)
 })
 public class WebAppContextConfigs implements WebMvcConfigurer {
     @Value("${mail.host}")
