@@ -42,7 +42,8 @@ import java.util.concurrent.Executor;
         @PropertySource("classpath:secret/jwt.properties"),
         @PropertySource("classpath:secret/vnpay.properties"),
         @PropertySource("classpath:secret/mail.properties"),
-        @PropertySource("classpath:secret/rabbitmq.properties")
+        @PropertySource("classpath:secret/rabbitmq.properties"),
+        @PropertySource("classpath:secret/databases.properties")
 })
 public class WebAppContextConfigs implements WebMvcConfigurer {
     @Value("${mail.host}")
@@ -87,6 +88,7 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
         props.put("mail.debug", debug);
         return sender;
     }
+
     @Bean
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine engine = new SpringTemplateEngine();
