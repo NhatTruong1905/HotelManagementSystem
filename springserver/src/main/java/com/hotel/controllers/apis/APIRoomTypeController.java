@@ -17,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @PropertySource("classpath:configs.properties")
+@CrossOrigin
 public class APIRoomTypeController {
     @Autowired
     private Environment env;
