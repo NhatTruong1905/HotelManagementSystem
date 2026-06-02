@@ -27,8 +27,8 @@ public class ApiSecurityConfigs {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/secure/**").permitAll()
-                        .requestMatchers("/api/payment/**").permitAll()
+                        .requestMatchers("/api/secure/**").authenticated()
+                        .requestMatchers("/api/payment/**").authenticated()
                         .anyRequest().permitAll()
                 ).addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
