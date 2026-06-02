@@ -19,7 +19,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.nio.charset.StandardCharsets;
 
 @Service
-@PropertySource("classpath:secret/mail.properties")
 public class MailServiceImpl implements MailService {
     @Autowired
     private JavaMailSender mailSender;

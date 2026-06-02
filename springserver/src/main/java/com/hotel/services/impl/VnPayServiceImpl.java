@@ -30,7 +30,6 @@ import java.util.*;
 
 @Service
 @Transactional
-@PropertySource("classpath:secret/vnpay.properties")
 public class VnPayServiceImpl implements VnPayService {
     @Value("${vnp_TmnCode}")
     private String vnpTmnCode;

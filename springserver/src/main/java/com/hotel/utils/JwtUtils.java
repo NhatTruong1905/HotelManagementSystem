@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@PropertySource("classpath:secret/jwt.properties")
 @Component
 public class JwtUtils {
     private static String secret;
