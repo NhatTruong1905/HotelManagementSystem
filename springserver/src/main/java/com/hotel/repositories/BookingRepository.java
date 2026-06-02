@@ -12,5 +12,5 @@ public interface BookingRepository extends BaseRepository<Booking> {
 
     Booking addOrUpdateGetObject(Booking booking);
 
-    void processExpiredBooking(Integer bookingId);
+    boolean processExpiredBooking(Integer bookingId);
 }

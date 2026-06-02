@@ -129,7 +129,7 @@ public class BookingRepositoryImpl implements BookingRepository {
     public Booking get(int id) {
         Session session = this.factory.getObject().getCurrentSession();
         return session.createQuery(
-                "select b from Booking b " + "join fetch b.customer " + "where b.id = :id", Booking.class)
+                        "select b from Booking b " + "join fetch b.customer " + "where b.id = :id", Booking.class)
                 .setParameter("id", id)
                 .uniqueResult();
     }
@@ -166,7 +166,7 @@ public class BookingRepositoryImpl implements BookingRepository {
 
 
     @Override
-    public void processExpiredBooking(Integer bookingId) {
+    public boolean processExpiredBooking(Integer bookingId) {
         Session session = this.factory.getObject().getCurrentSession();
         Booking booking = session.get(Booking.class, bookingId);
 
@@ -185,7 +185,11 @@ public class BookingRepositoryImpl implements BookingRepository {
 
             booking.setStatus(StatusBooking.CANCELLED.name());
             session.merge(booking);
+
+            return true;
         }
+
+        return false;
     }
 
     @Override

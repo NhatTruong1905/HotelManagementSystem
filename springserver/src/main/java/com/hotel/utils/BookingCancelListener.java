@@ -23,8 +23,13 @@ public class BookingCancelListener {
             Integer bookingId = Integer.parseInt(messageStr);
             System.out.println("Đã nhận được tin nhắn quá hạn cho Booking #" + bookingId);
 
-            bookingRepository.processExpiredBooking(bookingId);
-            this.mailService.sendBookingCancellationDueToTimeout(bookingId);
+            boolean isActuallyCancelled = bookingRepository.processExpiredBooking(bookingId);
+            if (isActuallyCancelled) {
+                System.out.println("-> Đơn #" + bookingId + " chưa thanh toán. Đã hủy & Đang gửi Email!");
+                this.mailService.sendBookingCancellationDueToTimeout(bookingId);
+            } else {
+                System.out.println("-> Đơn #" + bookingId + " đã thanh toán thành công trước đó. Bỏ qua gửi Email.");
+            }
         } catch (Exception e) {
             System.err.println("Lỗi khi hủy đơn từ RabbitMQ: " + e.getMessage());
         }

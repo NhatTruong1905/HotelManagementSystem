@@ -100,21 +100,40 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
                             {loading && <div className="mb-3"><MySpinner /></div>}
 
                             <div className="d-flex justify-content-center gap-3 mb-4 mt-3">
-                                <div style={{ position: 'relative', width: '150px', height: '40px' }}>
-                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
-                                        <SocialButton label="Google" iconSrc="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" />
-                                    </div>
+                                <div style={{
+                                    width: '150px',
+                                    height: '40px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    overflow: 'hidden',
+                                    borderRadius: '50px', 
+                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)' 
+                                }}>
                                     <GoogleLogin
                                         onSuccess={handleGoogleSuccess}
                                         onError={() => setErr("Lỗi Google")}
-                                        containerProps={{
-                                            style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }
-                                        }}
+                                        type="standard"
+                                        theme="outline"
+                                        size="large"
+                                        text="signin"
+                                        shape="pill"
+                                        width="150"
                                     />
                                 </div>
-                                <div style={{ width: '150px', height: '40px' }}>
+                                <div style={{
+                                    width: '150px',
+                                    height: '40px',
+                                    borderRadius: '50px',
+                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)', 
+                                    overflow: 'hidden' 
+                                }}>
                                     <FacebookLogin appId={process.env.REACT_APP_FACEBOOK_APP_ID} onSuccess={handleFacebookSuccess} render={({ onClick }) => (
-                                        <SocialButton onClick={onClick} iconSrc="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" label="Facebook" />
+                                        <SocialButton
+                                            onClick={onClick}
+                                            iconSrc="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg"
+                                            label="Facebook"
+                                            style={{ border: 'none', width: '100%', height: '100%' }} 
+                                        />
                                     )} />
                                 </div>
                             </div>
