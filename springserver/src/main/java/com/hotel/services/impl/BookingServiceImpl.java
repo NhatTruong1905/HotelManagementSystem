@@ -1,5 +1,6 @@
 package com.hotel.services.impl;
 
+import com.hotel.configs.RabbitMQConfig;
 import com.hotel.converter.BookingConverter;
 import com.hotel.dto.BookingDTO;
 import com.hotel.dto.requestbooking.RequestBookingDTO;
@@ -13,6 +14,7 @@ import com.hotel.exceptions.NotFoundUser;
 import com.hotel.repositories.*;
 import com.hotel.services.BookingService;
 import jakarta.persistence.NoResultException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Transactional
 public class BookingServiceImpl implements BookingService {
-    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
 
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
@@ -54,6 +56,8 @@ public class BookingServiceImpl implements BookingService {
     private ServiceRepository serviceRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
 
     @Override
@@ -207,13 +211,20 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void processCancelBooking(Integer bookingId, int minutes) {
-        Booking booking = this.bookingRepository.get(bookingId);
-        if (!booking.getStatus().equals(StatusBooking.PENDING.toString()))
-            return;
+    public void scheduleCancelBooking(Integer bookingId, int delayMinutes) {
+        long expirationTime = delayMinutes * 60 * 1000L;
+        System.out.println("Đã ném Booking #" + bookingId + " vào RabbitMQ, chờ " + delayMinutes + " phút.");
 
-        SCHEDULED_EXECUTOR_SERVICE.schedule(() -> {
-            this.bookingRepository.delete(bookingId);
-        }, minutes, TimeUnit.MINUTES);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.DELAY_ROUTING_KEY,
+                bookingId,
+                message -> {
+                    message.getMessageProperties().setExpiration(String.valueOf(expirationTime));
+                    return message;
+                }
+        );
     }
+
+
 }

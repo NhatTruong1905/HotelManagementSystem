@@ -52,8 +52,7 @@ public class APIBookingController {
         response.put("status", "SUCCESS");
         response.put("message", "Tạo đơn đặt phòng thành công");
         response.put("bookingId", newBookingId);
-
-        this.bookingService.processCancelBooking(newBookingId, 1);
+        this.bookingService.scheduleCancelBooking(newBookingId, 1);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

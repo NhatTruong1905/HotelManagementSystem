@@ -12,6 +12,7 @@ import com.hotel.repositories.CustomerRepository;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -32,6 +33,7 @@ public class BookingRepositoryImpl implements BookingRepository {
     private LocalSessionFactoryBean factory;
     @Autowired
     private Environment env;
+
 
     @Override
     public List<Booking> list(Map<String, String> params) {
@@ -174,9 +176,9 @@ public class BookingRepositoryImpl implements BookingRepository {
             deleteServicesQuery.setParameter("bId", bookingId);
             deleteServicesQuery.executeUpdate();
 
-            jakarta.persistence.Query deletePaymentQuery = session.createQuery("DELETE FROM Payment p WHERE p.booking.id = :bId AND p.status = 'PENDING'");
-            deletePaymentQuery.setParameter("bId", bookingId);
-            deletePaymentQuery.executeUpdate();
+            Query updatePaymentQuery = session.createQuery("UPDATE Payment p SET p.status = 'FAILED' WHERE p.booking.id = :bId AND p.status = 'PENDING'");
+            updatePaymentQuery.setParameter("bId", bookingId);
+            updatePaymentQuery.executeUpdate();
 
             booking.setStatus(StatusBooking.CANCELLED.name());
             session.merge(booking);
