@@ -129,7 +129,7 @@ const Booking = () => {
             if (pendingUrl) {
                 navigate(pendingUrl, { replace: true });
             }
-            return; 
+            return;
         }
         const cleanedCustomer = {
             fullName: customer.fullName.trim(),
@@ -169,7 +169,8 @@ const Booking = () => {
             const paymentUrl = `/booking/payment?${searchParams.toString()}`;
             localStorage.setItem('pendingBookingId', bookingId);
             localStorage.setItem('pendingPaymentUrl', paymentUrl);
-            localStorage.setItem('pendingBookingExpire', Date.now() + 15 * 60 * 1000);
+            // localStorage.setItem('pendingBookingExpire', Date.now() + 15 * 60 * 1000);
+            localStorage.setItem('pendingBookingExpire', Date.now() + 1 * 60 * 1000);
 
             navigate(`payment?${searchParams.toString()}`, {
                 state: { bookingId: bookingId, totalPrice: totalPrice },

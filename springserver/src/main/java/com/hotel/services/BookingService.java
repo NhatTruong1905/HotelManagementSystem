@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface BookingService extends BaseService<BookingDTO> {
     void recalculateTotalAmount(int bookingId);
+
     Integer processAddBooking(RequestBookingDTO dto);
-    void processCancelBooking(Integer bookingId, int minutes);
+
+    void scheduleCancelBooking(Integer bookingId, int delayMinutes);
 }
