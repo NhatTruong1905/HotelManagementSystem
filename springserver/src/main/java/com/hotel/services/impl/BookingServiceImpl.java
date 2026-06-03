@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,8 +167,8 @@ public class BookingServiceImpl implements BookingService {
         booking.setExpectedCheckIn(dto.getExpectedCheckIn());
         booking.setExpectedCheckOut(dto.getExpectedCheckOut());
         booking.setTotalAmount(dto.getTotalPrice());
-        booking.setCreatedAt(Instant.now());
-        booking.setUpdatedAt(Instant.now());
+        booking.setCreatedAt(LocalDateTime.now());
+        booking.setUpdatedAt(LocalDateTime.now());
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.getUserByUsername(username);
