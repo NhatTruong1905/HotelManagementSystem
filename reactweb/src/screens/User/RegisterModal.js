@@ -69,19 +69,19 @@ const RegisterModal = ({ show, handleClose, showLogin }) => {
                 if (showLogin) showLogin();
             }
         } catch (ex) {
-           console.error(ex);
+            console.error(ex);
             if (ex.response && ex.response.data) {
                 const responseData = ex.response.data;
                 if (ex.response.status === 400 && responseData.errors) {
-                    setErrors(responseData.errors); 
-                } 
+                    setErrors(responseData.errors);
+                }
                 else if (responseData.message) {
                     setErrors({ general: responseData.message });
-                } 
+                }
                 else {
                     setErrors({ general: "Dữ liệu không hợp lệ!" });
                 }
-            } 
+            }
             else {
                 setErrors({ general: "Không thể kết nối đến máy chủ. Vui lòng thử lại sau!" });
             }

@@ -106,8 +106,8 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
                                     display: 'flex',
                                     justifyContent: 'center',
                                     overflow: 'hidden',
-                                    borderRadius: '50px', 
-                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)' 
+                                    borderRadius: '50px',
+                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)'
                                 }}>
                                     <GoogleLogin
                                         onSuccess={handleGoogleSuccess}
@@ -124,15 +124,15 @@ const LoginModal = ({ show, handleClose, showRegister }) => {
                                     width: '150px',
                                     height: '40px',
                                     borderRadius: '50px',
-                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)', 
-                                    overflow: 'hidden' 
+                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
+                                    overflow: 'hidden'
                                 }}>
                                     <FacebookLogin appId={process.env.REACT_APP_FACEBOOK_APP_ID} onSuccess={handleFacebookSuccess} render={({ onClick }) => (
                                         <SocialButton
                                             onClick={onClick}
                                             iconSrc="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg"
                                             label="Facebook"
-                                            style={{ border: 'none', width: '100%', height: '100%' }} 
+                                            style={{ border: 'none', width: '100%', height: '100%' }}
                                         />
                                     )} />
                                 </div>

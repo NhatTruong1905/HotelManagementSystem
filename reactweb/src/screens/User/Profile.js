@@ -15,19 +15,19 @@ const Profile = () => {
     const [preview, setPreview] = useState(null);
     const avatarRef = useRef();
 
-    const [formData, setFormData] = useState({ 
-        email: '', 
-        phone: '', 
-        password: '', 
-        confirmPassword: '' 
+    const [formData, setFormData] = useState({
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: ''
     });
 
-const fields = [
-    { name: 'email', label: 'Email', type: 'email' },
-    { name: 'phone', label: 'Số điện thoại', type: 'text' },
-    { name: 'password', label: 'Mật khẩu mới (để trống nếu không đổi)', type: 'password' },
-    { name: 'confirmPassword', label: 'Xác nhận mật khẩu', type: 'password' }
-];
+    const fields = [
+        { name: 'email', label: 'Email', type: 'email' },
+        { name: 'phone', label: 'Số điện thoại', type: 'text' },
+        { name: 'password', label: 'Mật khẩu mới (để trống nếu không đổi)', type: 'password' },
+        { name: 'confirmPassword', label: 'Xác nhận mật khẩu', type: 'password' }
+    ];
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -60,7 +60,7 @@ const fields = [
 
         if (!emailRegex.test(formData.email)) newErrors.email = "Email không đúng định dạng!";
         if (!phoneRegex.test(formData.phone)) newErrors.phone = "SĐT phải bắt đầu bằng 0 và đủ 10 số!";
-        
+
         if (formData.password && (formData.password.length < 3 || formData.password.length > 50)) {
             newErrors.password = "Mật khẩu từ 3 đến 50 ký tự!";
         }
@@ -73,32 +73,32 @@ const fields = [
     };
 
     const handleUpdate = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+        e.preventDefault();
+        if (!validate()) return;
 
-    setLoading(true);
-    let form = new FormData();
-    form.append("username", user.username);
-    form.append("email", formData.email);
-    form.append("phone", formData.phone);
-    if (formData.password) form.append("password", formData.password);
-    if (avatar) form.append("file", avatar);
+        setLoading(true);
+        let form = new FormData();
+        form.append("username", user.username);
+        form.append("email", formData.email);
+        form.append("phone", formData.phone);
+        if (formData.password) form.append("password", formData.password);
+        if (avatar) form.append("file", avatar);
 
-    try {
-        await authApis().post(endpoints['update-profile'], form);
+        try {
+            await authApis().post(endpoints['update-profile'], form);
 
-        let profileRes = await authApis().get(endpoints['profile']);
+            let profileRes = await authApis().get(endpoints['profile']);
 
-        dispatch({ "type": "LOGIN", "payload": profileRes.data });
-        setIsEditing(false); 
-        alert("Cập nhật thành công!");
-    } catch (ex) {
-        console.error(ex);
-        alert("Lỗi cập nhật!");
-    } finally {
-        setLoading(false);
-    }
-};
+            dispatch({ "type": "LOGIN", "payload": profileRes.data });
+            setIsEditing(false);
+            alert("Cập nhật thành công!");
+        } catch (ex) {
+            console.error(ex);
+            alert("Lỗi cập nhật!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (!user) return null;
 
@@ -113,7 +113,7 @@ const fields = [
                             {isEditing && (
                                 <div className="mt-2">
                                     <Button variant="outline-primary" size="sm" onClick={() => avatarRef.current.click()}>Đổi ảnh</Button>
-                                    <input type="file" ref={avatarRef} hidden onChange={(e) => {setAvatar(e.target.files[0]); setPreview(URL.createObjectURL(e.target.files[0]))}} accept="image/*" />
+                                    <input type="file" ref={avatarRef} hidden onChange={(e) => { setAvatar(e.target.files[0]); setPreview(URL.createObjectURL(e.target.files[0])) }} accept="image/*" />
                                 </div>
                             )}
                             <h3 className="mt-3 text-dark fw-bold">{user.username}</h3>
@@ -136,11 +136,11 @@ const fields = [
                                 {fields.map((field) => (
                                     <Form.Group className={field.name === 'confirmPassword' ? "mb-4" : "mb-3"} key={field.name}>
                                         <Form.Label className="fw-bold small">{field.label}</Form.Label>
-                                        <Form.Control 
-                                            type={field.type} 
-                                            value={formData[field.name]} 
-                                            onChange={(e) => setFormData({...formData, [field.name]: e.target.value})} 
-                                            isInvalid={!!errors[field.name]} 
+                                        <Form.Control
+                                            type={field.type}
+                                            value={formData[field.name]}
+                                            onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                                            isInvalid={!!errors[field.name]}
                                         />
                                         <Form.Control.Feedback type="invalid">
                                             {errors[field.name]}

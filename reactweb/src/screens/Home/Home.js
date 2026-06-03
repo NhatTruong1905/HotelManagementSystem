@@ -7,7 +7,7 @@ import HeroBanner from '../../components/HeroBanner';
 const Home = () => {
     return (
         <div className="home-page">
-            <HeroBanner 
+            <HeroBanner
                 title="Trải nghiệm lưu trú đẳng cấp"
                 subtitle="Đặt phòng sang trọng với mức giá ưu đãi nhất tại Hotel Booking System"
             >
