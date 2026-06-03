@@ -73,7 +73,8 @@ public class VnPayServiceImpl implements VnPayService {
         vnp_Params.put("vnp_TmnCode", vnpTmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
-        vnp_Params.put("vnp_TxnRef", String.valueOf(pendingPayment.getId()));
+        String uniqueTxnRef = pendingPayment.getId() + "_" + System.currentTimeMillis();
+        vnp_Params.put("vnp_TxnRef", uniqueTxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + bookingId);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
@@ -139,7 +140,8 @@ public class VnPayServiceImpl implements VnPayService {
             String signValue = VnpaySecurityUtil.hashRawString(hashData.toString(), vnpHashSecret);
 
             if (signValue.equals(vnp_SecureHash)) {
-                int paymentId = Integer.parseInt(vnp_Params.get("vnp_TxnRef"));
+                String vnp_TxnRef = vnp_Params.get("vnp_TxnRef");
+                int paymentId = Integer.parseInt(vnp_TxnRef.split("_")[0]);
                 Payment payment = paymentRepository.get(paymentId);
 
                 if (payment != null) {
