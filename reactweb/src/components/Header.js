@@ -30,7 +30,7 @@ const Header = () => {
     };
 
     const location = useLocation();
-    const isHomePage = location.pathname === '/' ||location.pathname.startsWith('/booking') ||location.pathname.startsWith('/room-types');
+    const isHomePage = location.pathname === '/' || location.pathname.startsWith('/booking') || location.pathname.startsWith('/room-types');
 
     useEffect(() => {
         if (q.get('login') === 'true') {
